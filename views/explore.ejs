@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore Users</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Explore Users</title>
+    <link rel="stylesheet" href="/styles.css">
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
             color: #d1d1d1;
             margin: 0;
-            padding-top: 70px; /* Space for the navbar */
+            padding-top: 70px;
         }
 
         h1 {
@@ -21,44 +22,50 @@
         }
 
         .user-list {
-            max-width: 600px;
+            max-width: 780px;
             margin: 0 auto;
             padding: 20px;
             background-color: #1e1e1e;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            text-align: left;
         }
 
         .user-item {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             padding: 15px;
             border-bottom: 1px solid #444;
+            transition: background-color 0.3s ease;
         }
 
         .user-item:last-child {
-            border-bottom: none; /* Remove border for the last item */
+            border-bottom: none;
         }
 
         .profile-pic {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            border-radius: 70%;
             cursor: pointer;
             transition: transform 0.2s;
+            margin-right: 15px;
         }
 
-        .profile-pic:hover {
-            transform: scale(1.05);
-        }
-
-        .user-item strong {
-            color: #ffffff;
+        .user-details {
             margin-left: 10px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-age {
+            font-size: 0.9rem;
+            color: #aaaaaa;
         }
 
         .add-friend-button {
+            margin-left: auto;
             background-color: #2196f3;
             color: #fff;
             border: none;
@@ -71,10 +78,62 @@
         .add-friend-button:hover {
             background-color: #0b7dda;
         }
+
+        .navbar {
+            background: linear-gradient(90deg, #343a40 0%, #1f2d3d 100%);
+            padding: 1rem;
+            border-bottom: 2px solid #a727278c;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #d1d5db;
+        }
+
+        .profile-container {
+            background-color: #1e1e1e;
+            width: 100%;
+            max-width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            text-align: center;
+            margin-top: 20px;
+            transform: scale(0.95);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            animation: fadeIn 1s ease-out forwards;
+        }
+        .profile-pic:hover {
+    transform: scale(1.1); /* Slightly enlarge the image on hover */
+    opacity: 0.8; /* Lower opacity on hover */
+}
+
+        .profile-container:hover {
+            transform: scale(1);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.7);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
     </style>
 </head>
 <body>
-
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
         <div class="container-fluid">
@@ -85,63 +144,108 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="./index.html">Home</a>
+                        <form action="/explore" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Explore</button>
+                        </form>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./explore.html">Explore</a>
+                        <form action="/host_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Host Property</button>
+                        </form>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="./host.html">Hosting</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Use Case 3</a>
+                        <form action="/view_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">View Property </button>
+                        </form>
                     </li>
                 </ul>
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="./profile.html" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="https://github.com/mdo.png" id="navimage" width="32" height="32" class="rounded-circle me-2">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                            <% if (his_profile && his_profile.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= his_profile.profile_picture.toString('base64') %>" alt="Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
+                            <% } else { %>
+                                <img src="/default-profile.jpg" alt="Default Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
+                            <% } %>
                             <strong>Me</strong>
                         </a>
+                        
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="./inbox.html">Inbox</a></li>
-                            <li><a class="dropdown-item" href="./friendlist.html">Friend list</a></li>
+                            <li> 
+                            <form action="/friendlist" method="GET" class="d-inline">
+                               <button class="dropdown-item" type="submit">Friend List</button>
+                           </form>
+                           </li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Sign out</a></li>
+                            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <div class="user-list">
-        <h1>Explore Users</h1>
-        <ul>
-            <% users.forEach(user => { %>
-                <li class="user-item">
-                    <img src="data:image/jpeg;base64,<%= user.profile_picture.toString('base64') %>" alt="<%= user.full_name %>'s profile picture" class="profile-pic" onclick="window.location.href='./profile.html?id=<%= user.id %>'">
-                    <strong><%= user.full_name %> (Age: <%= user.age %>)</strong> 
-                    <button class="add-friend-button" onclick="addFriend(<%= user.id %>)">Add Friend</button>
-                </li>
-            <% }) %>
-        </ul>
+    
+    <div class="profile-container">
+        <div class="user-list">
+            <h1>Look for Friends</h1>
+            <ul>
+                <% profile.forEach(profile => { %>
+                    <li class="user-item"> 
+                        <a href="/profile/<%= profile.user_id %>">           
+                            <% if (profile.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= profile.profile_picture.toString('base64') %>" alt="<%= profile.full_name %>'s profile picture" class="profile-pic" loading="lazy">
+                            <% } else { %>
+                                <img src="/default-profile.jpg" alt="Default Profile Picture" class="profile-pic" loading="lazy">
+                            <% } %>
+                        </a>
+                        
+                        <div class="user-details">
+                            <a href="/profile/<%= profile.user_id %>" class="user-name" style="text-decoration: none; color: inherit; ">
+                                <strong><%= profile.full_name %></strong>
+                            </a>
+                            <span class="user-age">Age: <%= profile.age %></span>
+                        </div>
+                        <button class="add-friend-button" aria-label="Add <%= profile.full_name %> as a friend" onclick="addFriend(<%= profile.user_id %>, this)">Add Friend</button>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
     </div>
-
+    
     <script>
-        async function addFriend(userId) {
+        async function addFriend(userId, button) {
+            button.disabled = true; // Disable the button to prevent multiple clicks
+            button.innerHTML = 'Adding...'; // Change button text to indicate action
+            const originalText = button.innerHTML; // Store the original button text
+        
             try {
+                // Send POST request to add friend
                 const response = await fetch(`/friend/add/${userId}`, { method: 'POST' });
+        
                 if (response.ok) {
-                    alert("Friend request sent!");
+                    console.log("Friend request sent!"); // Notify user of success
+                    button.innerHTML = 'Added!'; // Change button text to 'Added!'
+                    setTimeout(() => {
+                        button.innerHTML = originalText; // Revert to original text after a delay
+                    }, 2000); // Change the time as needed
                 } else {
-                    alert("Error sending friend request.");
+                    const errorData = await response.json(); // Parse error response
+                    console.log(errorData.message); // Show the error message
+                    button.innerHTML = originalText; // Revert to original text
                 }
             } catch (error) {
                 console.error("Error adding friend:", error);
+                console.log("Error adding friend."); // Notify user of error
+                button.innerHTML = originalText; // Revert to original text
+            } finally {
+                button.disabled = false; // Re-enable the button
             }
         }
-    </script>
+        </script>
+        
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
 </body>
 </html>

@@ -196,7 +196,7 @@ app.post("/verify", async (req, res) => {
             req.session.otp = null;
             req.session.user = null;
            
-            alert("You have been logged in redirecting you to the login page ");
+          
 
             res.redirect("/signup");
         } catch (error) {
@@ -292,22 +292,314 @@ app.post('/profile/edit', upload.single('profile_picture'), async (req, res) => 
     }
 });
 
+// Route for Explore Page
 app.get('/explore', async (req, res) => {
     try {
-        const users = await db.query("SELECT * FROM profiles  WHERE user_id != $1", [req.session.userId]); // Exclude the logged-in user
-        res.render('explore.ejs', { user: users.rows });
+        // Fetch other users' profiles
+        const result = await db.query(
+            "SELECT user_id, full_name, age, profile_picture FROM profiles WHERE user_id != $1",
+            [req.session.userId]
+        );
+        const users = result.rows; // Get the user data
+
+        // Fetch the current user's profile picture
+        const user_profile = await db.query(
+            "SELECT profile_picture FROM profiles WHERE user_id = $1",
+            [req.session.userId]
+        );
+
+        let profilePictureBase64 = null;
+        if (user_profile.rows[0] && user_profile.rows[0].profile_picture) {
+            profilePictureBase64 = user_profile.rows[0].profile_picture.toString('base64');
+        }
+        
+        // Pass users and current user's profile to the template
+        res.render('explore.ejs', { profile: users, his_profile: { profile_picture: profilePictureBase64 } });
     } catch (error) {
         console.error("Error fetching users:", error);
         res.status(500).send("Error fetching users");
     }
 });
 
+app.get('/profile/:id', async (req, res) => {
+    try {
+        const their_Id = req.params.id;
+        const my_id = req.session.userId;
+        
+        // Log userId and my_id for debugging
+        console.log("Requested User ID:", their_Id);
+        console.log("Logged-in User ID:", my_id);
+
+        // Fetch the profile of the requested user
+        const result = await db.query("SELECT * FROM profiles WHERE user_id = $1", [their_Id]);
+        console.log("Requested User Profile Data:", result.rows);
+
+        // Fetch the profile picture of the logged-in user
+        const myProfile = await db.query("SELECT profile_picture FROM profiles WHERE user_id = $1", [my_id]);
+        console.log("Logged-in User Profile Picture Data:", myProfile.rows);
+
+        if (result.rows.length > 0) {
+            const userProfile = result.rows[0];
+            res.render('others_profile.ejs', { profile: userProfile, my: myProfile.rows[0] });
+        } else {
+            res.status(404).send("User not found");
+        }
+    } catch (error) {
+        console.error("Error fetching profile:", error);
+        res.status(500).send("Server error");
+    }
+});
+
+app.get('/friendlist', async (req, res) => {
+    const currentUserId = req.session.userId;
+
+    try {
+        // Fetch pending friend requests for the current user
+        const pendingRequestsResult = await db.query(`
+            SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
+            FROM friend_requests 
+            JOIN profiles ON friend_requests.sender_id = profiles.user_id 
+            WHERE friend_requests.receiver_id = $1 AND friend_requests.status = 'pending'
+        `, [currentUserId]);
+
+        // Convert profile pictures to base64
+        const pendingRequests = pendingRequestsResult.rows.map(request => ({
+            ...request,
+            profile_picture: request.profile_picture ? `data:image/jpeg;base64,${request.profile_picture.toString('base64')}` : null
+        }));
+
+        // Fetch accepted friends for the current user
+        const acceptedFriendsResult = await db.query(`
+            SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
+            FROM friendships 
+            JOIN profiles ON friendships.friend_id = profiles.user_id 
+            WHERE friendships.user_id = $1
+        `, [currentUserId]);
+
+        // Convert profile pictures to base64
+        const acceptedFriends = acceptedFriendsResult.rows.map(friend => ({
+            ...friend,
+            profile_picture: friend.profile_picture ? `data:image/jpeg;base64,${friend.profile_picture.toString('base64')}` : null
+        }));
+
+        // Render the friendlist page with pending and accepted friends data
+        res.render('friendlist.ejs', { 
+            pendingRequests, 
+            acceptedFriends 
+        });
+    } catch (error) {
+        console.error("Error fetching friend list:", error);
+        res.status(500).send("An error occurred while loading the friend list.");
+    }
+});
+
+// Route to handle friend request addition
+app.post('/friend/add/:userId', async (req, res) => {
+    const senderId = req.session.userId;  // Assuming the user ID of the logged-in user is stored in the session
+    const receiverId = req.params.userId;
+
+    try {
+        // Insert a new friend request
+        await db.query(`
+            INSERT INTO friend_requests (sender_id, receiver_id, status)
+            VALUES ($1, $2, 'pending')
+            ON CONFLICT (sender_id, receiver_id) DO NOTHING
+        `, [senderId, receiverId]);
+
+        res.status(200).json({ message: "Friend request sent!" });
+    } catch (error) {
+        console.error("Error adding friend:", error);
+        res.status(500).json({ message: "Error adding friend request." });
+    }
+});
+
+// Accept friend request
+app.post('/friend/accept/:userId', async (req, res) => {
+    const senderId = req.params.userId;  // ID of the user who sent the friend request
+    const receiverId = req.session.userId;  // ID of the current user who is accepting the request
+
+    try {
+        
+
+        // Insert friendship into the friendships table
+        await db.query(`
+            INSERT INTO friendships (user_id, friend_id) 
+            VALUES ($1, $2), ($2, $1) 
+            ON CONFLICT DO NOTHING
+        `, [receiverId, senderId]);
+
+        // Remove the friend request from the friend_requests table
+        await db.query(`
+            DELETE FROM friend_requests 
+            WHERE sender_id = $1 AND receiver_id = $2
+        `, [senderId, receiverId]);
+
+
+        res.json({ message: "Friend request accepted!" });
+    } catch (error) {
+        await db.query('ROLLBACK');  // Rollback transaction in case of error
+        console.error("Error accepting friend request:", error);
+        res.status(500).json({ message: "An error occurred while accepting the friend request." });
+    }
+});
+
+// Decline friend request
+app.post('/friend/decline/:userId', async (req, res) => {
+    const senderId = req.params.userId;  // ID of the user who sent the friend request
+    const receiverId = req.session.userId;  // ID of the current user who is declining the request
+
+    try {
+        // Remove the friend request from the friend_requests table
+        await db.query(`
+            DELETE FROM friend_requests 
+            WHERE sender_id = $1 AND receiver_id = $2
+        `, [senderId, receiverId]);
+
+        res.json({ message: "Friend request declined." });
+    } catch (error) {
+        console.error("Error declining friend request:", error);
+        res.status(500).json({ message: "An error occurred while declining the friend request." });
+    }
+});
+
+app.get('/host_property', async (req, res) => { 
+    const my_id = req.session.userId; // Assuming you have a session-based user ID
+    console.log(my_id);
+    try {
+
+        const user_profile = await db.query(
+            "SELECT profile_picture FROM profiles WHERE user_id = $1",
+            [req.session.userId]
+        );
+
+        let profilePictureBase64 = null;
+        if (user_profile.rows[0] && user_profile.rows[0].profile_picture) {
+            profilePictureBase64 = user_profile.rows[0].profile_picture.toString('base64');
+        }
+
+        // Pass current user's profile to the template
+        res.render('host.ejs', { profile: { profile_picture: profilePictureBase64 } });
+
+    } catch (error) {
+        console.error("Error loading host property page:", error);
+        res.status(500).send("Server Error");
+    }
+});
+
+app.get('/view_property', async (req, res) => {
+    const my_id = req.session.userId;
+    try {
+        // Fetch all property details
+        const propertiesResult = await db.query(
+            `SELECT * FROM properties`,
+        );
+        // Check if there are any properties
+        if (propertiesResult.rows.length === 0) {
+            return res.status(404).send("No properties found.");
+        }
+
+        const properties = propertiesResult.rows;
+
+        // Fetch associated images for all properties
+        const imagesResult = await db.query(
+            `SELECT property_id, image_data FROM property_images`,
+        );
+
+        // Map images to each property based on property_id
+        const imagesMap = imagesResult.rows.reduce((acc, row) => {
+            if (!acc[row.property_id]) {
+                acc[row.property_id] = [];
+            }
+            acc[row.property_id].push(row.image_data.toString('base64'));
+            return acc;
+        }, {});  // imageMap = { 1: ['image1', 'image2'], 2: ['image3', 'image4'] }
+
+        // Combine properties with their corresponding images
+        const propertiesWithImages = properties.map(property => {
+            return {
+                ...property,
+                images: imagesMap[property.property_id] || []
+            };
+        });
+
+        // Render the 'properties.ejs' template and pass the data to it
+        res.render('properties.ejs', { 
+            properties: propertiesWithImages, 
+            my_id: my_id 
+        });
+
+    } catch (error) {
+        console.error("Error fetching properties:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.post('/host/property', upload.array('images'), async (req, res) => {
+    const my_id = req.session.userId; // Assuming you have a session-based user ID
+    console.log(my_id);
+    const {
+        requirement, property_type, description, pets_allowed, smoking_allowed,
+        occupancy, availability_date, rent_per_day, rent_per_week, rent_per_month,
+        address, latitude, longitude
+    } = req.body;
+    const images = req.files; // Images uploaded via multer
+
+    try {
+        // Insert the main property details
+        const propertyResult = await db.query(
+            `INSERT INTO properties (
+                user_id, requirement, property_type, description, pets_allowed, 
+                smoking_allowed, occupancy, availability_date, rent_per_day, 
+                rent_per_week, rent_per_month, address, latitude, longitude
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) 
+            RETURNING property_id`,
+            [
+                my_id, requirement, property_type, description, pets_allowed, 
+                smoking_allowed, occupancy, availability_date, rent_per_day, 
+                rent_per_week, rent_per_month, address, latitude, longitude
+            ]
+        );
+
+        const propertyId = propertyResult.rows[0].property_id;
+
+        // Insert each image into the property_images table
+        for (const image of images) {
+            const imageData = image.buffer.toString('base64'); // Convert image buffer to base64
+            await db.query(
+                `INSERT INTO property_images (property_id, image_data)
+                 VALUES ($1, $2)`,
+                [propertyId, imageData]
+            );
+        }
+
+        // Redirect to the explore page after posting the property
+        res.redirect('/explore');
+    } catch (error) {
+        console.error("Error inserting property:", error);
+        res.status(500).send("Server Error");
+    }
+});
 
 app.post('/submit-profile', (req, res) => {
     
 // this is different 
 
 });
+
+
+app.post('/logout', (req, res) => {
+    // Destroy the session
+    req.session.destroy(err => {
+        if (err) {
+            console.error("Error destroying session:", err);
+            return res.status(500).send("Could not log out. Please try again.");
+        }
+        
+        // Redirect to login page
+        res.render('login.ejs'); // Adjust this path as needed
+    });
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });

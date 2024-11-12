@@ -217,9 +217,7 @@
                     </li>
                     
                     <li class="nav-item">
-                        <form action="/host_property" method="GET" style="display: inline;">
-                            <button type="submit" class="nav-link btn btn-link">Host Property</button>
-                        </form>
+                        <a class="nav-link" href="./host.html">Hosting</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Use Case 3</a>
@@ -228,20 +226,17 @@
                 <ul class="navbar-nav mb-2 mb-lg-0">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
-                            <% if (profile && profile.profile_picture) { %>
-                                <img src="data:image/jpeg;base64,<%= profile.profile_picture.toString('base64') %>" alt="Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
+                            <% if (my && my.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= my.profile_picture.toString('base64') %>" alt="Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
                             <% } else { %>
                                 <img src="/default-profile.jpg" alt="Default Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
                             <% } %>
                             <strong>Me</strong>
                         </a>
+                        
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="./inbox.html">Inbox</a></li>
-                            <li> 
-                                 <form action="/friendlist" method="GET" class="d-inline">
-                                <button class="dropdown-item" type="submit">Friend List</button>
-                            </form>
-                            </li>
+                            <li><a class="dropdown-item" href="./friendlist.html">Friend list</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="/logout" method="POST" style="display: inline;">
@@ -260,10 +255,12 @@
     <div class="profile-container">
         <!-- Banner Section -->
         <div class="banner">
-            <form action="/profile/edit" method="get">
-                <button type="submit" class="edit-button">Edit Profile</button>
+            <form action="" method="get">
+                <button type="submit" class="edit-button"> Message </button>
             </form>
+            
         </div>
+        
         
 
         <!-- Profile Header with Profile Picture -->

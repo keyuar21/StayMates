@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property List</title>
+    <style>
+        /* Dark theme styling */
+        body {
+            background-color: #121212;
+            color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .property-card {
+            background-color: #2c2c2c;
+            border: 1px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px;
+            width: 80%;
+            max-width: 600px;
+            color: #f5f5f5;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .property-card h2 {
+            color: #00adb5;
+        }
+
+        .property-card p {
+            margin: 10px 0;
+        }
+
+        .property-images {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .property-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 2px solid #00adb5;
+        }
+
+        .no-properties {
+            text-align: center;
+            font-size: 1.2em;
+            color: #bbb;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Available Properties</h1>
+    </header>
+
+    <main>
+        <% if (properties && properties.length > 0) { %>
+            <% properties.forEach(property => { %>
+                <div class="property-card">
+                    <h2><%= property.property_type %> in <%= property.address %></h2>
+                    <p><strong>Requirement:</strong> <%= property.requirement %></p>
+                    <p><strong>Description:</strong> <%= property.description %></p>
+                    <p><strong>Rent per Day:</strong> $<%= property.rent_per_day %></p>
+                    <p><strong>Rent per Week:</strong> $<%= property.rent_per_week %></p>
+                    <p><strong>Rent per Month:</strong> $<%= property.rent_per_month %></p>
+                    <p><strong>Occupancy:</strong> <%= property.occupancy %> persons</p>
+                    <p><strong>Availability Date:</strong> <%= property.availability_date.toDateString() %></p>
+                    <p><strong>Pets Allowed:</strong> <%= property.pets_allowed ? "Yes" : "No" %></p>
+                    <p><strong>Smoking Allowed:</strong> <%= property.smoking_allowed ? "Yes" : "No" %></p>
+
+                    <!-- Display property images -->
+                    <div class="property-images">
+                        <% property.images.forEach(image => { %>
+                            <img src="data:image/jpeg;base64,<%= image %>" alt="Property Image" class="property-image">
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p class="no-properties">No properties available.</p>
+        <% } %>
+    </main>
+</body>
+</html>

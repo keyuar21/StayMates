@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host a Property</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+       body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('/images/background.jpg');
+    background-position: center;
+    color: #d1d1d1;
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+        .navbar {
+            background: linear-gradient(90deg, #343a40 0%, #1f2d3d 100%);
+            padding: 1rem;
+            border-bottom: 2px solid #a727278c;
+            position: fixed; /* Fix the navbar at the top */
+            top: 0; /* Ensure it stays at the top */
+            width: 100%; /* Ensure it stretches across the full width */
+            z-index: 1000; /* Ensure it stays above other content */
+        }
+        .navbar-brand {
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
+
+.navbar-nav .nav-link {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #d1d5db; /* Light grey on hover */
+}
+
+        h1 {
+            text-align: center;
+            color: #160a0a;
+            margin-bottom: 30px;
+            font-size: 45px;
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .my-properties-button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #313233;
+            margin-top: 120px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .my-properties-button:hover {
+            background-color: #514f4f;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(30, 30, 30, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-out;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #2e2e2e; /* Dark background for all input fields */
+            color: #ffffff; /* White text color */
+            transition: background-color 0.3s;
+        }
+
+        input[type="number"], 
+        input[type="text"] {
+            background-color: #2e2e2e; /* Dark background */
+            color: #ffffff; /* White text color */
+            border: 1px solid #444; /* Matching border */
+        }
+
+        input:focus, textarea:focus, select:focus {
+            background-color: #3b3b3b;
+            border-color: #2196f3;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            animation: fadeIn 1s ease-out;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #imageUploadArea {
+            cursor: pointer;
+        }
+        
+        #imagePreview img {
+            width: 100px; /* Set desired thumbnail width */
+            height: auto;
+            margin: 5px;
+            border: 1px solid #444;
+            border-radius: 5px;
+        }
+
+        .suggestions {
+    border: 1px solid #ccc;
+    background: #fff;
+    position: absolute;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 10px;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #aaaaaa;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="./index.html">StayMates</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    
+                    <li class="nav-item">
+                        <form action="/explore" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Explore</button>
+                        </form>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <form action="/host_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Host Property</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Use Case 3</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                            <% if (profile && profile.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= profile.profile_picture %>" alt="Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
+                            <% } else { %>
+                                <img src="/default-profile.jpg" alt="Default Profile Picture" class="profile-picture" style="width: 40px; height: 40px;">
+                            <% } %>
+                            <strong>Me</strong>
+                        </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="./inbox.html">Inbox</a></li>
+                            <li> 
+                                 <form action="/friendlist" method="GET" class="d-inline">
+                                <button class="dropdown-item" type="submit">Friend List</button>
+                            </form>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/logout" method="POST" style="display: inline;">
+                                    <button type="submit" class="dropdown-item">Sign out</button>
+                                </form>
+                            </li>
+                            
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+
+    <div>
+        <a href="/hosted-properties" class="my-properties-button">My Hosted Properties ↗️</a>
+    </div>
+
+    <h1>Host a Property</h1>
+<form id="propertyForm" action="/host/property" method="POST" enctype="multipart/form-data">
+    <label for="requirement">Requirement:</label>
+    <select name="requirement" id="requirement">
+        <option value="roommate_rented">Already own a property, looking for roommates</option>
+        <option value="owner_rented">Owner planning to rent their property</option>
+    </select>
+
+    <label for="property_type">Property Type:</label>
+    <select name="property_type" id="property_type">
+        <option value="flat">Flat</option>
+        <option value="villa">Villa</option>
+        <option value="pg">PG</option>
+    </select>
+
+    <label for="description">Property Details:</label>
+    <textarea name="description" id="description" placeholder="Describe your property" rows="4"></textarea>
+
+    <label for="occupancy">Occupancy (Number of People):</label>
+    <input type="number" name="occupancy" id="occupancy" class="form-control" placeholder="Number of people" min="1" required>
+
+    <label for="pets_allowed">Pets Allowed:</label>
+    <select name="pets_allowed" id="pets_allowed">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+
+    <label for="smoking_allowed">Smoking Allowed:</label>
+    <select name="smoking_allowed" id="smoking_allowed">
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
+
+    <label for="images">Property Images:</label>
+    <div id="imageUploadArea" class="border border-dashed p-3 text-center mb-3">
+        <input type="file" name="images" id="images" multiple accept="image/*" style="display: none;">
+        <div id="uploadMessage">Drag & drop multiple images of your property here / <span id="browseButton" style="color: #2196f3; cursor: pointer;">browse</span></div>
+        <div id="imagePreview" class="mt-3"></div>
+        <button type="button" id="clearButton" class="btn btn-secondary mt-2" style="display: none;">Clear Selection</button>
+    </div>
+
+    <!-- Hidden fields to store latitude and longitude -->
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
+
+    <!-- Address field with suggestions -->
+    <label for="address">Address:</label>
+    <input type="text" id="address" name="address" placeholder="Start typing your address" autocomplete="off">
+    <div id="addressSuggestions" class="suggestions"></div>
+
+    <label for="availability_date">Available Until:</label>
+    <input type="text" name="availability_date" id="availability_date" placeholder="Select a date">
+
+    <div class="mb-3">
+        <label for="rent_per_day">Rent (Per Day):</label>
+        <div class="input-group">
+            <input type="number" name="rent_per_day" id="rent_per_day" class="form-control" placeholder="Per day in ₹">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="rent_per_week">Rent (Per Week):</label>
+        <div class="input-group">
+            <input type="number" name="rent_per_week" id="rent_per_week" class="form-control" placeholder="Per week in ₹">
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="rent_per_month">Rent (Per Month):</label>
+        <div class="input-group">
+            <input type="number" name="rent_per_month" id="rent_per_month" class="form-control" placeholder="Per month in ₹">
+        </div>
+    </div>
+
+    <!-- Submit button -->
+    <button type="submit">Post Property</button>
+</form>
+
+    <div class="footer">
+        <p>&copy; 2024 StayMates. All rights reserved.</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('images');
+        const imagePreview = document.getElementById('imagePreview');
+        const clearButton = document.getElementById('clearButton');
+        const uploadMessage = document.getElementById('uploadMessage');
+        const browseButton = document.getElementById('browseButton');
+
+        // Function to handle file selection and preview
+        function handleFiles(files) {
+            imagePreview.innerHTML = ''; // Clear previous previews
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    imagePreview.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+            clearButton.style.display = 'block'; // Show clear button
+            uploadMessage.style.display = 'none'; // Hide upload message
+        }
+
+        // Handle drag and drop
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('border-primary');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('border-primary');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('border-primary');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        // Handle file input change
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Handle browse button click
+        browseButton.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        // Handle clear button click
+        clearButton.addEventListener('click', () => {
+            imageInput.value = ''; // Clear input
+            imagePreview.innerHTML = ''; // Clear preview
+            clearButton.style.display = 'none'; // Hide clear button
+            uploadMessage.style.display = 'block'; // Show upload message
+        });
+
+        document.getElementById("address").addEventListener("input", function() {
+        const query = this.value;
+        if (query.length < 3) return; // Trigger search after 3 characters
+
+        fetch(`https://api.locationiq.com/v1/autocomplete.php?key=pk.9628833fdba99c5c0cc1435b667df80a&q=${encodeURIComponent(query)}&limit=5&format=json`)
+            .then(response => response.json())
+            .then(data => {
+                const suggestions = data.map(place => `<div class="suggestion-item" data-lat="${place.lat}" data-lon="${place.lon}">${place.display_name}</div>`);
+                document.getElementById("addressSuggestions").innerHTML = suggestions.join("");
+
+                // Add click event to each suggestion
+                document.querySelectorAll(".suggestion-item").forEach(item => {
+                    item.addEventListener("click", function() {
+                        // Set the address field
+                        document.getElementById("address").value = this.textContent;
+                        
+                        // Store latitude and longitude in hidden fields
+                        document.getElementById("latitude").value = this.getAttribute("data-lat");
+                        document.getElementById("longitude").value = this.getAttribute("data-lon");
+
+                        // Clear suggestions
+                        document.getElementById("addressSuggestions").innerHTML = "";
+                    });
+                });
+            })
+            .catch(error => console.error("Error fetching address suggestions:", error));
+    });
+
+
+        // Initialize Flatpickr
+        flatpickr("#availability_date", {
+            dateFormat: "Y-m-d",
+            minDate: "today", // Optional: Prevent past dates
+        });
+    </script>
+</body>
+</html>
