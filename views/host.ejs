@@ -231,9 +231,11 @@
     
 
     <div>
-        <a href="/hosted-properties" class="my-properties-button">My Hosted Properties ↗️</a>
+        <form method="GET" action="/myhostedproperties">
+            <button type="submit" class="my-properties-button">My Hosted Properties ↗️</button>
+        </form>
     </div>
-
+    
     <h1>Host a Property</h1>
 <form id="propertyForm" action="/host/property" method="POST" enctype="multipart/form-data">
     <label for="requirement">Requirement:</label>

@@ -1,4 +1,4 @@
-import express from "express";
+import express, { query } from "express";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
@@ -352,6 +352,7 @@ app.get('/profile/:id', async (req, res) => {
 
 app.get('/friendlist', async (req, res) => {
     const currentUserId = req.session.userId;
+    console.log(currentUserId);
 
     try {
         // Fetch pending friend requests for the current user
@@ -488,43 +489,71 @@ app.get('/host_property', async (req, res) => {
 
 app.get('/view_property', async (req, res) => {
     const my_id = req.session.userId;
+
+    if (!my_id) {
+        return res.redirect('/login'); // Redirect to login page if the user is not logged in
+    }
+
     try {
-        // Fetch all property details
+        // Fetch properties and associated images
         const propertiesResult = await db.query(
-            `SELECT * FROM properties`,
+            `SELECT 
+                p.property_id, 
+                p.property_type, 
+                p.address, 
+                p.requirement, 
+                p.description, 
+                p.rent_per_day, 
+                p.rent_per_week, 
+                p.rent_per_month, 
+                p.occupancy, 
+                p.availability_date, 
+                p.pets_allowed, 
+                p.smoking_allowed, 
+                pi.image_data 
+            FROM properties p
+            LEFT JOIN property_images pi ON p.property_id = pi.property_id`
         );
+
         // Check if there are any properties
         if (propertiesResult.rows.length === 0) {
             return res.status(404).send("No properties found.");
         }
 
-        const properties = propertiesResult.rows;
-
-        // Fetch associated images for all properties
-        const imagesResult = await db.query(
-            `SELECT property_id, image_data FROM property_images`,
-        );
-
-        // Map images to each property based on property_id
-        const imagesMap = imagesResult.rows.reduce((acc, row) => {
+        // Map properties and group images by property_id
+        const propertiesWithImages = propertiesResult.rows.reduce((acc, row) => {
             if (!acc[row.property_id]) {
-                acc[row.property_id] = [];
+                acc[row.property_id] = {
+                    property_id: row.property_id,
+                    property_type: row.property_type,
+                    address: row.address,
+                    requirement: row.requirement,
+                    description: row.description,
+                    rent_per_day: row.rent_per_day,
+                    rent_per_week: row.rent_per_week,
+                    rent_per_month: row.rent_per_month,
+                    occupancy: row.occupancy,
+                    availability_date: row.availability_date,
+                    pets_allowed: row.pets_allowed,
+                    smoking_allowed: row.smoking_allowed,
+                    images: []  // Initialize an empty array for images
+                };
             }
-            acc[row.property_id].push(row.image_data.toString('base64'));
+
+            // Push base64-encoded images into the images array
+            if (row.image_data) {
+                acc[row.property_id].images.push(row.image_data.toString('base64'));
+            }
+
             return acc;
-        }, {});  // imageMap = { 1: ['image1', 'image2'], 2: ['image3', 'image4'] }
+        }, {});
 
-        // Combine properties with their corresponding images
-        const propertiesWithImages = properties.map(property => {
-            return {
-                ...property,
-                images: imagesMap[property.property_id] || []
-            };
-        });
+        // Convert the properties object to an array
+        const propertiesArray = Object.values(propertiesWithImages);
 
-        // Render the 'properties.ejs' template and pass the data to it
+        // Pass the data to the EJS template
         res.render('properties.ejs', { 
-            properties: propertiesWithImages, 
+            properties: propertiesArray,
             my_id: my_id 
         });
 
@@ -533,6 +562,157 @@ app.get('/view_property', async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+
+
+
+
+app.post('/show_interest/:property_id', async (req, res) => {
+    const propertyId = req.params.property_id;
+    const userId = req.body.user_id;  // User ID from the form (logged-in user)
+
+    try {
+        // Fetch the owner of the property
+        const ownerResult = await db.query(`
+            SELECT user_id FROM properties WHERE property_id = $1
+        `, [propertyId]);
+
+        if (ownerResult.rows.length === 0) {
+            return res.status(404).send("Property not found.");
+        }
+
+        const ownerId = ownerResult.rows[0].user_id;
+
+        // Insert the interest into the "interests" table
+        await db.query(`
+            INSERT INTO interests (property_id, requested_user_id, user_id, accepted)
+            VALUES ($1, $2, $3, false)
+        `, [propertyId, userId, ownerId]);
+
+        // Redirect back to the properties page or another appropriate page
+        res.render('properties.ejs');  // Redirect to the properties list
+
+    } catch (error) {
+        console.error("Error submitting interest:", error);
+        res.status(500).send("Error showing interest in property.");
+    }
+});
+
+
+
+
+app.get('/myhostedproperties', async (req, res) => {
+    const my_id = req.session.userId;
+console.log(my_id);
+    // Check if user is logged in
+    if (!my_id) {
+        return res.status(401).send("Please log in to view your properties.");
+    }
+
+    try {
+        // Fetch properties for the logged-in user along with their images
+        const propertiesResult = await db.query(
+            `SELECT 
+                p.property_id, 
+                p.property_type, 
+                p.address, 
+                p.requirement, 
+                p.description, 
+                p.rent_per_day, 
+                p.rent_per_week, 
+                p.rent_per_month, 
+                p.occupancy, 
+                p.availability_date, 
+                p.pets_allowed, 
+                p.smoking_allowed, 
+                pi.image_data 
+            FROM properties p
+            LEFT JOIN property_images pi ON p.property_id = pi.property_id
+            WHERE p.user_id = $1`,
+            [my_id]
+        );
+
+        // Check if there are any properties for this user
+        if (propertiesResult.rows.length === 0) {
+            return res.status(404).send("No properties found for this user.");
+        }
+
+        // Group properties and their images by property_id
+        const propertiesWithImages = propertiesResult.rows.reduce((acc, row) => {
+            // Initialize the property if it hasn't been added yet
+            if (!acc[row.property_id]) {
+                acc[row.property_id] = {
+                    property_id: row.property_id,
+                    property_type: row.property_type,
+                    address: row.address,
+                    requirement: row.requirement,
+                    description: row.description,
+                    rent_per_day: row.rent_per_day,
+                    rent_per_week: row.rent_per_week,
+                    rent_per_month: row.rent_per_month,
+                    occupancy: row.occupancy,
+                    availability_date: row.availability_date,
+                    pets_allowed: row.pets_allowed,
+                    smoking_allowed: row.smoking_allowed,
+                    images: []  // Start with an empty array for images
+                };
+            }
+            // Convert binary image data to base64 and add to images array
+            if (row.image_data) {
+                acc[row.property_id].images.push(row.image_data.toString('base64'));
+            }
+            return acc;
+        }, {});
+
+        // Convert the object back to an array for easier handling in EJS
+        const propertiesArray = Object.values(propertiesWithImages);
+
+        // Render the 'myproperties.ejs' file with the user's properties data
+        res.render('myproperties.ejs', {
+            properties: propertiesArray,
+            my_id: my_id
+        });
+
+    } catch (error) {
+        console.error("Error fetching user's properties:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+app.get('/people_interested/:property_id', async (req, res) => {
+    const propertyId = req.params.property_id;
+    const userid = req.session.userId;
+    try {
+        // Fetch the users who are interested in the property
+        const interestedUsers = await db.query(
+            `SELECT u.id, u.username, u.email 
+             FROM interests i 
+             JOIN users u ON i.user_id = u.id 
+             WHERE i.property_id = $1`,
+            [propertyId]
+        );
+
+        // Fetch the property details
+        const property = await db.query(
+            `SELECT * FROM properties WHERE property_id = $1`,
+            [propertyId]
+        );
+
+        if (interestedUsers.rows.length === 0) {
+            return res.status(404).send('No users interested in this property.');
+        }
+
+        res.render('people_interested', {
+            property: property.rows[0],
+            interestedUsers: interestedUsers.rows
+        });
+
+    } catch (error) {
+        console.error("Error fetching interested users:", error);
+        res.status(500).send("Error fetching interested users.");
+    }
+});
+
+
 
 app.post('/host/property', upload.array('images'), async (req, res) => {
     const my_id = req.session.userId; // Assuming you have a session-based user ID
@@ -578,12 +758,6 @@ app.post('/host/property', upload.array('images'), async (req, res) => {
         console.error("Error inserting property:", error);
         res.status(500).send("Server Error");
     }
-});
-
-app.post('/submit-profile', (req, res) => {
-    
-// this is different 
-
 });
 
 
