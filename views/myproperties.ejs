@@ -93,9 +93,9 @@
                                 <p><strong>Smoking Allowed:</strong> <%= property.smoking_allowed ? "Yes" : "No" %></p>
                                 
                                 <!-- Button for "People Interested" -->
-                                <form method="GET" action="/people_interested/:property_id'">
-                                    <button type="submit" class="people_interested">More Info  ↗️</button>
-                                </form>
+                                <a href="/people_interested/<%= property.property_id %>">See Interested Users</a>
+
+                                
                             </div>
                         </div>
                     </div>

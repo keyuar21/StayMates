@@ -9,6 +9,19 @@
         body {
             background-color: #121212;
             color: #f5f5f5;
+            font-family: Arial, sans-serif;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
         .property-card {
@@ -17,10 +30,16 @@
             border-radius: 8px;
             padding: 20px;
             margin: 15px;
-            width: 80%;
+            width: 90%;
             max-width: 600px;
             color: #f5f5f5;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
         }
 
         .property-card h2 {
@@ -32,6 +51,7 @@
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 15px;
+            justify-content: center;
         }
 
         .property-image {
@@ -46,6 +66,7 @@
             text-align: center;
             font-size: 1.2em;
             color: #bbb;
+            margin-top: 20px;
         }
 
         .btn-show-interest {
@@ -54,10 +75,26 @@
             border: none;
             padding: 10px 20px;
             cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         .btn-show-interest:hover {
             background-color: #007e7a;
+            transform: scale(1.05);
+        }
+
+        .btn-done {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: not-allowed;
+        }
+
+        .btn-done:hover {
+            background-color: #218838;
         }
     </style>
 </head>
@@ -65,13 +102,12 @@
     <header class="text-center p-4">
         <h1>Available Properties</h1>
     </header>
-
-    <main class="container mt-5">
+    <main class="container">
         <% if (properties && properties.length > 0) { %>
             <% properties.forEach(property => { %>
                 <div class="property-card">
                     <h2><%= property.property_type %> in <%= property.address %></h2>
-                    
+    
                     <!-- Display images -->
                     <div class="property-images">
                         <% if (property.images.length > 0) { %>
@@ -82,7 +118,7 @@
                             <p>No images available for this property.</p>
                         <% } %>
                     </div>
-                    
+    
                     <p><strong>Requirement:</strong> <%= property.requirement %></p>
                     <p><strong>Description:</strong> <%= property.description %></p>
                     <p><strong>Rent per Day:</strong> $<%= property.rent_per_day %></p>
@@ -92,12 +128,12 @@
                     <p><strong>Availability Date:</strong> <%= new Date(property.availability_date).toDateString() %></p>
                     <p><strong>Pets Allowed:</strong> <%= property.pets_allowed ? "Yes" : "No" %></p>
                     <p><strong>Smoking Allowed:</strong> <%= property.smoking_allowed ? "Yes" : "No" %></p>
-                    
+    
                     <!-- Show Interest Button -->
                     <% if (my_id) { %>
-                        <form action="/show_interest/<%= property.property_id %>" method="POST">
+                        <form action="/show_interest/<%= property.property_id %>" method="POST" id="interest-form-<%= property.property_id %>">
                             <input type="hidden" name="user_id" value="<%= my_id %>">
-                            <button type="submit" class="btn-show-interest">Show Interest</button>
+                            <button type="submit" class="btn-show-interest" id="interest-btn-<%= property.property_id %>" onclick="handleShowInterest(event, <%= property.property_id %>)">Show Interest</button>
                         </form>
                     <% } else { %>
                         <p>Please log in to show interest.</p>
@@ -108,5 +144,29 @@
             <p class="no-properties">No properties available.</p>
         <% } %>
     </main>
+
+    <script>
+        // Handle the "Show Interest" button click event
+        function handleShowInterest(event, propertyId) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get the button and form elements
+            const btn = document.getElementById(`interest-btn-${propertyId}`);
+            const form = document.getElementById(`interest-form-${propertyId}`);
+
+            // Change the button to "Done" and make it green
+            btn.innerHTML = "Done";
+            btn.classList.remove("btn-show-interest");
+            btn.classList.add("btn-done");
+
+            // Disable the button to prevent further clicks
+            btn.disabled = true;
+
+            // Optionally, submit the form after a short delay (for visual effect)
+            setTimeout(() => {
+                form.submit();
+            }, 1000); // 1 second delay for visual effect
+        }
+    </script>
 </body>
 </html>

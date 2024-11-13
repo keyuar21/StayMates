@@ -131,6 +131,36 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+        footer {
+  background-color: #4d4a4a;
+  padding: 40px 20px;
+}
+
+footer .col {
+  margin-bottom: 20px;
+}
+
+footer h5 {
+  font-size: 18px;
+  color: #ffefef;
+}
+
+footer .nav-link {
+  font-size: 14px;
+  color: #8b97a1;
+}
+
+footer .nav-link:hover {
+  color: #eae6e6;
+}
+
+.text-body-secondary {
+  color: #c5c7c9;
+}
+
+footer img {
+  border-radius: 5px;
+}
     </style>
 </head>
 <body>
@@ -247,5 +277,30 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
+        <footer class="row row-cols-1 row-cols-sm-2 row-cols-md-5 py-5 my-5 border-top">
+          <div class="col mb-3">
+            <a href="/" class="d-flex align-items-center mb-3 link-body-emphasis text-decoration-none">
+              <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
+            </a>
+            <p class="text-body-secondary">
+              <img src="./images/LOGO.png" alt="Logo" width="50px"> ©️2024 Stay-Mates, Inc
+            </p>
+          </div>
+      
+          <div class="col mb-3"></div>
+      
+          <div class="col mb-3">
+            <h5>Section</h5>
+            <ul class="nav flex-column">
+              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Home</a></li>
+              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Features</a></li>
+              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">Pricing</a></li>
+              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">FAQs</a></li>
+              <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-body-secondary">About</a></li>
+            </ul>
+          </div>
+        </footer>
+
+      
 </body>
 </html>

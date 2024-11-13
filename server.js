@@ -14,7 +14,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const db = new pg.Client({
     user: "postgres",
     host: "localhost",
-    database: "staymates",  // Update to match your new database name
+    database: "staymates", 
     password: "kcb@2004",
     port: 5432,
 });
@@ -24,34 +24,33 @@ db.connect();
 
 
 let is_verified = false;
-// Configure multer for image uploads
+
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 
-// Middleware to parse URL-encoded bodies (from forms)
 app.use(express.urlencoded({ extended: true }));
 
 // Set up sessions
 app.use(session({
-    secret: 'your-secret-key',   // Replace with a strong key
+    secret: 'your-secret-key',   
     resave: false,
     saveUninitialized: true
 }));
 
-// Set EJS as the templating engine
+
 app.set("view engine", "ejs");
 
-// Serve static files from the "public" directory
+
 app.use(express.static(__dirname + "/public"));
 
-// Generate and send OTP via email
+
 async function sendOtpEmail(email, otp) {
     let transporter = nodemailer.createTransport({
         service: "gmail", 
         auth: {
-            user: "staymates123@gmail.com", // Your email
-            pass: "evnt aepa yubz zuqc", // Your email password or app-specific password
+            user: "staymates123@gmail.com", 
+            pass: "evnt aepa yubz zuqc", 
         },
     });
 
@@ -79,53 +78,53 @@ app.get("/", (req, res) => {
 });
 
 app.get("/signup", (req, res) => {
-    res.render("login"); // Renders login.ejs from the "views" directory
+    res.render("login"); 
 });
 
 app.post("/submit", async (req, res) => {
-    const loginusername = req.body.loginusername.trim(); // Trim whitespace
-    const loginpassword = req.body.loginpassword.trim(); // Trim whitespace
+    const loginusername = req.body.loginusername.trim(); 
+    const loginpassword = req.body.loginpassword.trim(); 
 
-    console.log("Attempting login for user:", loginusername); // Debugging output
+    console.log("Attempting login for user:", loginusername); 
 
     try {
-        // Query to find the user by username
+  
         const result = await db.query(
             "SELECT id, password FROM users WHERE username = $1;",
             [loginusername]
         );
 
-        // Check if the user was found
+    
         if (result.rows.length > 0) {
             const storedPassword = result.rows[0].password;
-            const userId = result.rows[0].id; // Get user ID for profile check
+            const userId = result.rows[0].id; 
 
-            console.log("Password retrieved from database:", storedPassword); // Debugging output
+            console.log("Password retrieved from database:", storedPassword);
 
-            // Compare the provided password with the stored password
+          
             if (loginpassword === storedPassword) {
                 console.log("Login successful");
                 console.log(`Welcome ${loginusername}`);
                 
-                // Set session for logged-in user
+               
                 req.session.loggedIn = true;
                 req.session.username = loginusername;
-                req.session.userId = userId; // Store user ID in session
+                req.session.userId = userId; 
 
-                // Check if profile exists
+            
                 const profileCheckResult = await db.query(
                     "SELECT * FROM profiles WHERE user_id = $1;",
                     [userId]
                 );
 
-                // If no profile exists, redirect to create profile page
+            
                 if (profileCheckResult.rows.length === 0) {
 
-                    return res.render('create_profile'); // Correct
+                    return res.render('create_profile'); 
 
                 }
 
-                // If profile exists, redirect to profile page
+ 
                 const profile = await db.query(
                     "SELECT * FROM profiles WHERE user_id = $1",
                     [userId]
@@ -148,16 +147,16 @@ app.post("/submit", async (req, res) => {
 
 
 
-// Handle POST request to send OTP
+
 app.post("/sendotp", async (req, res) => {
     const email = req.body.emailid;
     const username = req.body.username;
     const password = req.body.password;
 
-    // Generate a 6-digit OTP
+
     const otp = crypto.randomInt(100000, 999999);
 
-    // Save OTP in the session
+
     req.session.otp = otp;
     req.session.user = { email, username, password };
 
@@ -166,17 +165,17 @@ app.post("/sendotp", async (req, res) => {
     console.log("Password:", password);
     console.log("Generated OTP:", otp);
 
-    // Send OTP to the user's email
+
     await sendOtpEmail(email, otp);
 
-    res.render("verify.ejs"); // Redirect to OTP verification page
+    res.render("verify.ejs"); 
 
 });
 
-// Handle OTP verification
+
 app.post("/verify", async (req, res) => {
-    const userOtp = parseInt(req.body.verifyotp, 10); // OTP entered by the user
-    const sessionOtp = req.session.otp; // OTP stored in the session
+    const userOtp = parseInt(req.body.verifyotp, 10); 
+    const sessionOtp = req.session.otp; 
 
     if (userOtp === sessionOtp) {
         console.log("User verified successfully");
@@ -192,7 +191,7 @@ app.post("/verify", async (req, res) => {
 
             console.log("User created successfully!");
 
-            // Clear session data
+
             req.session.otp = null;
             req.session.user = null;
            
@@ -209,14 +208,14 @@ app.post("/verify", async (req, res) => {
 });
 
 app.post('/submit_profile', upload.single('profile_picture'), async (req, res) => {
-    // Ensure user is authenticated
+
     const user_id = req.session.userId;
 
     if (!user_id) {
         return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Extract profile fields from req.body
+
     const name = req.body.full_name;
     const age = req.body.age;
     const phone = req.body.phone;
@@ -239,7 +238,7 @@ app.post('/submit_profile', upload.single('profile_picture'), async (req, res) =
 
         console.log("Profile created successfully for user:", user_id);
         
-        // Optionally use res.redirect if profile page has its own route
+
         return res.render("new.ejs", { profile: result.rows[0] });
        
     } catch (err) {
@@ -279,12 +278,12 @@ app.post('/profile/edit', upload.single('profile_picture'), async (req, res) => 
                 req.body.twitter,
                 req.body.instagram,
                 req.body.facebook,
-                req.file ? req.file.buffer : null,  // Set profile picture if uploaded
-                req.session.userId  // User ID from session
+                req.file ? req.file.buffer : null,  
+                req.session.userId 
             ]
         );
 
-        // Redirect to profile page after updating, rendering the updated profile
+        
         return res.render("new.ejs", { profile: result.rows[0] });
     } catch (error) {
         console.error("Error updating profile:", error);
@@ -292,17 +291,17 @@ app.post('/profile/edit', upload.single('profile_picture'), async (req, res) => 
     }
 });
 
-// Route for Explore Page
+
 app.get('/explore', async (req, res) => {
     try {
-        // Fetch other users' profiles
+
         const result = await db.query(
             "SELECT user_id, full_name, age, profile_picture FROM profiles WHERE user_id != $1",
             [req.session.userId]
         );
-        const users = result.rows; // Get the user data
+        const users = result.rows; 
 
-        // Fetch the current user's profile picture
+  
         const user_profile = await db.query(
             "SELECT profile_picture FROM profiles WHERE user_id = $1",
             [req.session.userId]
@@ -312,8 +311,7 @@ app.get('/explore', async (req, res) => {
         if (user_profile.rows[0] && user_profile.rows[0].profile_picture) {
             profilePictureBase64 = user_profile.rows[0].profile_picture.toString('base64');
         }
-        
-        // Pass users and current user's profile to the template
+      
         res.render('explore.ejs', { profile: users, his_profile: { profile_picture: profilePictureBase64 } });
     } catch (error) {
         console.error("Error fetching users:", error);
@@ -326,15 +324,15 @@ app.get('/profile/:id', async (req, res) => {
         const their_Id = req.params.id;
         const my_id = req.session.userId;
         
-        // Log userId and my_id for debugging
+    
         console.log("Requested User ID:", their_Id);
         console.log("Logged-in User ID:", my_id);
 
-        // Fetch the profile of the requested user
+      
         const result = await db.query("SELECT * FROM profiles WHERE user_id = $1", [their_Id]);
         console.log("Requested User Profile Data:", result.rows);
 
-        // Fetch the profile picture of the logged-in user
+
         const myProfile = await db.query("SELECT profile_picture FROM profiles WHERE user_id = $1", [my_id]);
         console.log("Logged-in User Profile Picture Data:", myProfile.rows);
 
@@ -355,7 +353,7 @@ app.get('/friendlist', async (req, res) => {
     console.log(currentUserId);
 
     try {
-        // Fetch pending friend requests for the current user
+       
         const pendingRequestsResult = await db.query(`
             SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
             FROM friend_requests 
@@ -363,13 +361,13 @@ app.get('/friendlist', async (req, res) => {
             WHERE friend_requests.receiver_id = $1 AND friend_requests.status = 'pending'
         `, [currentUserId]);
 
-        // Convert profile pictures to base64
+      
         const pendingRequests = pendingRequestsResult.rows.map(request => ({
             ...request,
             profile_picture: request.profile_picture ? `data:image/jpeg;base64,${request.profile_picture.toString('base64')}` : null
         }));
 
-        // Fetch accepted friends for the current user
+       
         const acceptedFriendsResult = await db.query(`
             SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
             FROM friendships 
@@ -377,13 +375,13 @@ app.get('/friendlist', async (req, res) => {
             WHERE friendships.user_id = $1
         `, [currentUserId]);
 
-        // Convert profile pictures to base64
+
         const acceptedFriends = acceptedFriendsResult.rows.map(friend => ({
             ...friend,
             profile_picture: friend.profile_picture ? `data:image/jpeg;base64,${friend.profile_picture.toString('base64')}` : null
         }));
 
-        // Render the friendlist page with pending and accepted friends data
+       
         res.render('friendlist.ejs', { 
             pendingRequests, 
             acceptedFriends 
@@ -394,13 +392,13 @@ app.get('/friendlist', async (req, res) => {
     }
 });
 
-// Route to handle friend request addition
+
 app.post('/friend/add/:userId', async (req, res) => {
     const senderId = req.session.userId;  // Assuming the user ID of the logged-in user is stored in the session
     const receiverId = req.params.userId;
 
     try {
-        // Insert a new friend request
+        
         await db.query(`
             INSERT INTO friend_requests (sender_id, receiver_id, status)
             VALUES ($1, $2, 'pending')
@@ -414,7 +412,7 @@ app.post('/friend/add/:userId', async (req, res) => {
     }
 });
 
-// Accept friend request
+
 app.post('/friend/accept/:userId', async (req, res) => {
     const senderId = req.params.userId;  // ID of the user who sent the friend request
     const receiverId = req.session.userId;  // ID of the current user who is accepting the request
@@ -422,14 +420,14 @@ app.post('/friend/accept/:userId', async (req, res) => {
     try {
         
 
-        // Insert friendship into the friendships table
+       
         await db.query(`
             INSERT INTO friendships (user_id, friend_id) 
             VALUES ($1, $2), ($2, $1) 
             ON CONFLICT DO NOTHING
         `, [receiverId, senderId]);
 
-        // Remove the friend request from the friend_requests table
+        
         await db.query(`
             DELETE FROM friend_requests 
             WHERE sender_id = $1 AND receiver_id = $2
@@ -450,7 +448,7 @@ app.post('/friend/decline/:userId', async (req, res) => {
     const receiverId = req.session.userId;  // ID of the current user who is declining the request
 
     try {
-        // Remove the friend request from the friend_requests table
+      
         await db.query(`
             DELETE FROM friend_requests 
             WHERE sender_id = $1 AND receiver_id = $2
@@ -488,16 +486,12 @@ app.get('/host_property', async (req, res) => {
 });
 
 app.get('/view_property', async (req, res) => {
-    const my_id = req.session.userId;
-
-    if (!my_id) {
-        return res.redirect('/login'); // Redirect to login page if the user is not logged in
-    }
+    const my_id = req.session.userId;  // User ID from session
 
     try {
-        // Fetch properties and associated images
-        const propertiesResult = await db.query(
-            `SELECT 
+       
+        const propertiesResult = await db.query(`
+            SELECT 
                 p.property_id, 
                 p.property_type, 
                 p.address, 
@@ -510,17 +504,12 @@ app.get('/view_property', async (req, res) => {
                 p.availability_date, 
                 p.pets_allowed, 
                 p.smoking_allowed, 
-                pi.image_data 
+                pi.image_data
             FROM properties p
-            LEFT JOIN property_images pi ON p.property_id = pi.property_id`
-        );
+            LEFT JOIN property_images pi ON p.property_id = pi.property_id
+        `);
 
-        // Check if there are any properties
-        if (propertiesResult.rows.length === 0) {
-            return res.status(404).send("No properties found.");
-        }
-
-        // Map properties and group images by property_id
+  
         const propertiesWithImages = propertiesResult.rows.reduce((acc, row) => {
             if (!acc[row.property_id]) {
                 acc[row.property_id] = {
@@ -540,7 +529,6 @@ app.get('/view_property', async (req, res) => {
                 };
             }
 
-            // Push base64-encoded images into the images array
             if (row.image_data) {
                 acc[row.property_id].images.push(row.image_data.toString('base64'));
             }
@@ -548,21 +536,17 @@ app.get('/view_property', async (req, res) => {
             return acc;
         }, {});
 
-        // Convert the properties object to an array
+        // Convert to an array
         const propertiesArray = Object.values(propertiesWithImages);
 
-        // Pass the data to the EJS template
-        res.render('properties.ejs', { 
-            properties: propertiesArray,
-            my_id: my_id 
-        });
+        // Pass properties and the current user's ID to the template
+        res.render('properties.ejs', { properties: propertiesArray, my_id: my_id });
 
     } catch (error) {
         console.error("Error fetching properties:", error);
         res.status(500).send("Internal Server Error");
     }
 });
-
 
 
 
@@ -587,9 +571,8 @@ app.post('/show_interest/:property_id', async (req, res) => {
             INSERT INTO interests (property_id, requested_user_id, user_id, accepted)
             VALUES ($1, $2, $3, false)
         `, [propertyId, userId, ownerId]);
-
-        // Redirect back to the properties page or another appropriate page
-        res.render('properties.ejs');  // Redirect to the properties list
+        console.log("shown interest ");
+        res.redirect('/view_property');
 
     } catch (error) {
         console.error("Error submitting interest:", error);
@@ -679,29 +662,49 @@ console.log(my_id);
 });
 
 app.get('/people_interested/:property_id', async (req, res) => {
-    const propertyId = req.params.property_id;
+    const propertyId = req.params.property_id; // Capture the property_id from the URL
+    console.log(propertyId); // Check if the propertyId is being captured correctly
+
     const userid = req.session.userId;
+
+    // Check if the user is logged in
+    if (!userid) {
+        return res.redirect('/login'); // Redirect to login if not logged in
+    }
+
     try {
         // Fetch the users who are interested in the property
         const interestedUsers = await db.query(
-            `SELECT u.id, u.username, u.email 
-             FROM interests i 
-             JOIN users u ON i.user_id = u.id 
-             WHERE i.property_id = $1`,
+            `SELECT 
+                profiles.full_name, 
+                profiles.profile_picture, 
+                interests.requested_user_id, 
+                interests.accepted  
+             FROM interests 
+             JOIN profiles ON  interests.requested_user_id = profiles.user_id 
+             WHERE interests.property_id = $1`,
             [propertyId]
         );
-
+        
         // Fetch the property details
         const property = await db.query(
-            `SELECT * FROM properties WHERE property_id = $1`,
+            `SELECT property_type, address, rent_per_day, rent_per_week, rent_per_month 
+             FROM properties WHERE property_id = $1`,
             [propertyId]
         );
 
+        // Check if the property exists
+        if (property.rows.length === 0) {
+            return res.status(404).send('Property not found.');
+        }
+
+        // Check if no users are interested
         if (interestedUsers.rows.length === 0) {
             return res.status(404).send('No users interested in this property.');
         }
 
-        res.render('people_interested', {
+        // Render the template with property and interested users
+        res.render('people_interested.ejs', {
             property: property.rows[0],
             interestedUsers: interestedUsers.rows
         });
@@ -709,6 +712,50 @@ app.get('/people_interested/:property_id', async (req, res) => {
     } catch (error) {
         console.error("Error fetching interested users:", error);
         res.status(500).send("Error fetching interested users.");
+    }
+});
+
+app.post('/people_interested/:property_id/:requested_user_id', async (req, res) => {
+    const { property_id, requested_user_id } = req.params;
+    const { action } = req.body;
+    const owner_id = req.session.userId; // Assuming the owner is logged in
+
+    if (action === 'accept') {
+        try {
+            // Create a new chat room (association between the owner and the accepted user)
+            const result = await db.query(
+                `INSERT INTO chat_rooms (property_id, owner_id, member_id) 
+                 VALUES ($1, $2, $3) RETURNING room_id`,
+                [property_id, owner_id, requested_user_id]
+            );
+
+            const room_id = result.rows[0].room_id;
+
+            // Mark the user as accepted in the 'interests' table
+            await db.query(
+                `UPDATE interests SET accepted = TRUE WHERE property_id = $1 AND requested_user_id = $2`,
+                [property_id, requested_user_id]
+            );
+
+            // Redirect to the chat room
+            res.redirect(`/chat/${room_id}`);
+        } catch (error) {
+            console.error("Error accepting user:", error);
+            res.status(500).send("Error accepting user.");
+        }
+    } else if (action === 'reject') {
+        try {
+            // Mark the user as rejected
+            await db.query(
+                `UPDATE interests SET accepted = FALSE WHERE property_id = $1 AND requested_user_id = $2`,
+                [property_id, requested_user_id]
+            );
+
+            res.redirect(`/people_interested/${property_id}`);
+        } catch (error) {
+            console.error("Error rejecting user:", error);
+            res.status(500).send("Error rejecting user.");
+        }
     }
 });
 
