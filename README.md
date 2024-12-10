@@ -49,17 +49,6 @@ Staymates is a web-based platform designed to connect individuals seeking roomma
 - **pgAdmin** for database administration.  
 - **GitHub** for version control.  
 
----
-
-## 📸 Project Previews  
-### **Profile Management Page**  
-![Profile Management](assets/profile-management.png)  
-
-### **Host a Property Feature**  
-![Host a Property](assets/host-property.png)  
-
-### **Explore Page**  
-![Explore Page](assets/explore-page.png)  
 
 ---
 
