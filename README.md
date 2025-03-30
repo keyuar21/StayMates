@@ -2,7 +2,7 @@
 
 Staymates is a web-based platform designed to connect individuals seeking roommates. Think of it as a social media application, but specifically tailored to help users find ideal living companions. The platform integrates user-friendly features like authentication, profile management, friend lists, and real-time interactions, making it a comprehensive solution for shared living arrangements.
 
----
+![img alt](https://github.com/keyuar21/StayMates/blob/e1def83812a6e5224835f69d021ce93f9f33f024/one.png)
 
 ## 🚀 Features  
 ### 🔑 **User Authentication**  
