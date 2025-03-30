@@ -4,6 +4,10 @@ Staymates is a web-based platform designed to connect individuals seeking roomma
 
 ![img alt](https://github.com/keyuar21/StayMates/blob/e1def83812a6e5224835f69d021ce93f9f33f024/one.png)
 
+![img alt](https://github.com/keyuar21/StayMates/blob/d08d2d3b549e78a6c82513b323ea6538543cbdcc/two.png)
+
+
+
 ## 🚀 Features  
 ### 🔑 **User Authentication**  
 - Secure login and registration with session management.  
