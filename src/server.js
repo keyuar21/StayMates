@@ -21,10 +21,13 @@ const db = new pg.Client({
     database: process.env.DB_NAME,
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-    ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : false
+    ssl: process.env.DB_SSL === "true" ? {
+        rejectUnauthorized: false,
+        channelBinding: process.env.DB_CHANNEL_BINDING || undefined
+    } : false
 });
 
-db.connect();
+console.log('Connecting to database:', process.env.DB_NAME);
 
 let is_verified = false;
 
@@ -945,6 +948,13 @@ app.get('/new', async (req, res) => {
     }
 });
 
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
+db.connect()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Server running on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.error('Failed to connect to database:', err);
+    process.exit(1);
+  });
