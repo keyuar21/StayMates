@@ -9,10 +9,10 @@ import multer from 'multer';
 import path from 'path';
 import dotenv from "dotenv";
 
-dotenv.config({ path: process.cwd() + "/env" });
+dotenv.config({ path: process.cwd() + "/.env" });
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const db = new pg.Client({
@@ -51,12 +51,12 @@ app.use(express.static(__dirname + "/public"));
 
 // Use environment variables for sensitive credentials
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
+        service: "gmail", 
+        auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
-    },
-});
+        },
+    });
 
 async function sendOtpEmail(email, otp) {
     let mailOptions = {
@@ -374,19 +374,19 @@ app.get('/friendlist', async (req, res) => {
                 }
             }
         }
-        
+       
         const pendingRequestsResult = await db.query(`
             SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
             FROM friend_requests 
             JOIN profiles ON friend_requests.sender_id = profiles.user_id 
             WHERE friend_requests.receiver_id = $1 AND friend_requests.status = 'pending'
         `, [currentUserId]);
-
+      
         const pendingRequests = pendingRequestsResult.rows.map(request => ({
             ...request,
             profile_picture: request.profile_picture ? request.profile_picture.toString('base64') : null
         }));
-
+       
         const acceptedFriendsResult = await db.query(`
             SELECT profiles.user_id, profiles.full_name, profiles.profile_picture 
             FROM friendships 
@@ -398,7 +398,7 @@ app.get('/friendlist', async (req, res) => {
             ...friend,
             profile_picture: friend.profile_picture ? friend.profile_picture.toString('base64') : null
         }));
-
+       
         res.render('friendlist.ejs', { 
             pendingRequests, 
             acceptedFriends,

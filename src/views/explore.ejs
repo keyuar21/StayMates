@@ -235,7 +235,7 @@
             height: 3px;
             background: linear-gradient(90deg, var(--accent2), var(--accent), var(--accent2));
             animation: shimmer 2s ease-in-out infinite;
-        }
+}
 
         .profile-container:hover {
             transform: translateY(-5px);
@@ -346,11 +346,11 @@ footer img {
                         
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="/new">My Profile</a></li>
-                            <li>
-                                <form action="/friendlist" method="GET" class="d-inline">
-                                    <button class="dropdown-item" type="submit">Friend List</button>
-                                </form>
-                            </li>
+                            <li> 
+                            <form action="/friendlist" method="GET" class="d-inline">
+                               <button class="dropdown-item" type="submit">Friend List</button>
+                           </form>
+                           </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form action="/logout" method="POST" style="display: inline;">
@@ -370,7 +370,7 @@ footer img {
             <ul>
                 <% for (let i = 0; i < profile.length; i++) { 
                     const user = profile[i]; %>
-                    <li class="user-item">
+                    <li class="user-item"> 
                         <a href="/profile/<%= user.user_id %>">
                             <% if (user.profile_picture) { %>
                                 <img src="data:image/jpeg;base64,<%= user.profile_picture.toString('base64') %>" alt="<%= user.full_name %>'s profile picture" class="profile-pic" loading="lazy">
@@ -428,7 +428,7 @@ footer img {
     <footer style="background: var(--input-bg); border-top: 1px solid var(--input-border); padding: 12px 0 8px 0; margin-top: 28px; text-align: center;">
         <img src="/images/LOGO.png" alt="Logo" style="width:28px; vertical-align:middle; border-radius:5px; margin-right:8px;">
         <span style="color: var(--muted); font-size: 0.98em; vertical-align:middle;">©️2024 Stay-Mates, Inc</span>
-    </footer>
-
+        </footer>
+      
 </body>
 </html>

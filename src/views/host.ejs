@@ -27,11 +27,11 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+       body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: var(--input-bg);
             color: var(--text);
-            margin: 0;
+    margin: 0;
             padding-top: 70px;
         }
 
@@ -49,17 +49,17 @@
 
         .navbar-brand {
             color: var(--accent2);
-            font-weight: bold;
-            font-size: 1.25rem;
+    font-weight: bold;
+    font-size: 1.25rem;
             letter-spacing: 1px;
-        }
+}
 
-        .navbar-nav .nav-link {
+.navbar-nav .nav-link {
             color: var(--text);
-            font-weight: 500;
-        }
+    font-weight: 500;
+}
 
-        .navbar-nav .nav-link:hover {
+.navbar-nav .nav-link:hover {
             color: var(--accent2);
         }
 
@@ -223,7 +223,7 @@
             color: var(--text);
             border: 2px solid var(--input-border);
         }
-
+        
         .btn-secondary:hover {
             background: var(--main-bg);
             border-color: var(--accent2);
@@ -256,18 +256,18 @@
             overflow-y: auto;
             box-shadow: var(--shadow);
             z-index: 1000;
-            position: absolute;
+    position: absolute;
             width: 100%;
-        }
+}
 
-        .suggestion-item {
+.suggestion-item {
             padding: 0.75rem 1rem;
-            cursor: pointer;
+    cursor: pointer;
             border-bottom: 1px solid var(--input-border);
             transition: all 0.3s ease;
-        }
+}
 
-        .suggestion-item:hover {
+.suggestion-item:hover {
             background-color: var(--main-bg);
             color: var(--accent2);
         }
@@ -293,7 +293,7 @@
 
             .navbar-nav .nav-link {
                 margin: 0.25rem 0;
-            }
+}
         }
 
         /* Animations */
@@ -378,15 +378,15 @@
             </div>
         </div>
     </nav>
-
+    
     <div class="main-container">
         <!-- My Properties Button -->
         <div class="text-center">
             <form method="GET" action="/myhostedproperties" style="display: inline;">
                 <button type="submit" class="my-properties-btn">My Hosted Properties ↗️</button>
-            </form>
-        </div>
-
+        </form>
+    </div>
+    
         <!-- Page Header -->
         <div class="page-header">
             <h1 class="page-title">Host a Property</h1>
@@ -395,22 +395,22 @@
 
         <!-- Property Form -->
         <div class="form-container">
-            <form id="propertyForm" action="/host/property" method="POST" enctype="multipart/form-data">
+<form id="propertyForm" action="/host/property" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="requirement" class="form-label">Requirement:</label>
                     <select name="requirement" id="requirement" class="form-select">
-                        <option value="roommate_rented">Already own a property, looking for roommates</option>
-                        <option value="owner_rented">Owner planning to rent their property</option>
-                    </select>
+        <option value="roommate_rented">Already own a property, looking for roommates</option>
+        <option value="owner_rented">Owner planning to rent their property</option>
+    </select>
                 </div>
 
                 <div class="form-group">
                     <label for="property_type" class="form-label">Property Type:</label>
                     <select name="property_type" id="property_type" class="form-select">
-                        <option value="flat">Flat</option>
-                        <option value="villa">Villa</option>
-                        <option value="pg">PG</option>
-                    </select>
+        <option value="flat">Flat</option>
+        <option value="villa">Villa</option>
+        <option value="pg">PG</option>
+    </select>
                 </div>
 
                 <div class="form-group">
@@ -420,7 +420,7 @@
 
                 <div class="form-group">
                     <label for="occupancy" class="form-label">Occupancy (Number of People):</label>
-                    <input type="number" name="occupancy" id="occupancy" class="form-control" placeholder="Number of people" min="1" required>
+    <input type="number" name="occupancy" id="occupancy" class="form-control" placeholder="Number of people" min="1" required>
                 </div>
 
                 <div class="row">
@@ -428,18 +428,18 @@
                         <div class="form-group">
                             <label for="pets_allowed" class="form-label">Pets Allowed:</label>
                             <select name="pets_allowed" id="pets_allowed" class="form-select">
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="smoking_allowed" class="form-label">Smoking Allowed:</label>
                             <select name="smoking_allowed" id="smoking_allowed" class="form-select">
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+    </select>
                         </div>
                     </div>
                 </div>
@@ -447,7 +447,7 @@
                 <div class="form-group">
                     <label class="form-label">Property Images:</label>
                     <div id="imageUploadArea" class="image-upload-area">
-                        <input type="file" name="images" id="images" multiple accept="image/*" style="display: none;">
+        <input type="file" name="images" id="images" multiple accept="image/*" style="display: none;">
                         <div id="uploadMessage" class="upload-message">
                             <span id="instructionText">Drag & drop multiple images of your property here or </span>
                             <label for="images" class="browse-button" style="cursor:pointer;">browse files</label>
@@ -455,11 +455,11 @@
                         <div id="imagePreview" class="image-preview"></div>
                         <button type="button" id="clearButton" class="btn btn-secondary mt-3" style="display: none;">Clear Selection</button>
                     </div>
-                </div>
+    </div>
 
                 <!-- Hidden fields for coordinates -->
-                <input type="hidden" name="latitude" id="latitude">
-                <input type="hidden" name="longitude" id="longitude">
+    <input type="hidden" name="latitude" id="latitude">
+    <input type="hidden" name="longitude" id="longitude">
 
                 <div class="form-group">
                     <label for="address" class="form-label">Address:</label>
@@ -483,15 +483,15 @@
                         <div class="form-group">
                             <label for="rent_per_week" class="form-label">Rent (Per Week):</label>
                             <input type="number" name="rent_per_week" id="rent_per_week" class="form-control" placeholder="₹ per week">
-                        </div>
-                    </div>
+        </div>
+    </div>
                     <div class="col-md-4">
                         <div class="form-group">
                             <label for="rent_per_month" class="form-label">Rent (Per Month):</label>
                             <input type="number" name="rent_per_month" id="rent_per_month" class="form-control" placeholder="₹ per month">
                         </div>
-                    </div>
-                </div>
+        </div>
+    </div>
 
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary btn-lg">Post Property</button>
@@ -608,7 +608,7 @@
 
         // Address autocomplete
         document.getElementById("address").addEventListener("input", function() {
-            const query = this.value;
+        const query = this.value;
             const suggestionsDiv = document.getElementById("addressSuggestions");
             
             if (query.length < 3) {
@@ -616,26 +616,26 @@
                 return;
             }
 
-            fetch(`https://api.locationiq.com/v1/autocomplete.php?key=pk.9628833fdba99c5c0cc1435b667df80a&q=${encodeURIComponent(query)}&limit=5&format=json`)
-                .then(response => response.json())
-                .then(data => {
+        fetch(`https://api.locationiq.com/v1/autocomplete.php?key=pk.9628833fdba99c5c0cc1435b667df80a&q=${encodeURIComponent(query)}&limit=5&format=json`)
+            .then(response => response.json())
+            .then(data => {
                     const suggestions = data.map(place => 
                         `<div class="suggestion-item" data-lat="${place.lat}" data-lon="${place.lon}">${place.display_name}</div>`
                     );
                     suggestionsDiv.innerHTML = suggestions.join("");
                     suggestionsDiv.style.display = 'block';
 
-                    document.querySelectorAll(".suggestion-item").forEach(item => {
-                        item.addEventListener("click", function() {
-                            document.getElementById("address").value = this.textContent;
-                            document.getElementById("latitude").value = this.getAttribute("data-lat");
-                            document.getElementById("longitude").value = this.getAttribute("data-lon");
+                document.querySelectorAll(".suggestion-item").forEach(item => {
+                    item.addEventListener("click", function() {
+                        document.getElementById("address").value = this.textContent;
+                        document.getElementById("latitude").value = this.getAttribute("data-lat");
+                        document.getElementById("longitude").value = this.getAttribute("data-lon");
                             suggestionsDiv.style.display = 'none';
-                        });
                     });
-                })
-                .catch(error => console.error("Error fetching address suggestions:", error));
-        });
+                });
+            })
+            .catch(error => console.error("Error fetching address suggestions:", error));
+    });
 
         // Hide suggestions when clicking outside
         document.addEventListener('click', function(e) {
