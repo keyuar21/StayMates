@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Friends - StayMates</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --main-dark: #181512;
+            --main-bg: #2d2420;
+            --accent: #583a28;
+            --accent2: #a67c52;
+            --input-bg: #2a2320;
+            --input-border: #3a2c22;
+            --input-focus: #a67c52;
+            --text: #f8f6f2;
+            --muted: #d2c6b2;
+            --info-bg: #241c18;
+            --shadow: 0 4px 24px #583a2822;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--input-bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+        .navbar {
+            background: linear-gradient(90deg, var(--main-dark) 0%, var(--accent) 100%);
+            padding: 1rem;
+            border-bottom: 2px solid var(--accent2);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 12px #18151260;
+        }
+        .navbar-brand {
+            color: var(--accent2);
+            font-weight: bold;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+        }
+        .navbar-nav .nav-link {
+            color: var(--text);
+            font-weight: 500;
+        }
+        .navbar-nav .nav-link:hover {
+            color: var(--accent2);
+        }
+        .navbar-profile-pic {
+            border-radius: 50%;
+            object-fit: cover;
+            width: 40px;
+            height: 40px;
+        }
+        .main-container {
+            max-width: 1100px;
+            margin: 2.5rem auto 0 auto;
+            padding: 0 1rem;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent2);
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 8px #18151260;
+        }
+        .friends-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.2rem;
+        }
+        .friend-card {
+            background: var(--main-dark);
+            border: 1.5px solid var(--input-border);
+            border-radius: 22px;
+            color: var(--text);
+            box-shadow: 0 8px 32px rgba(88, 58, 40, 0.18);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 2.5rem;
+            max-width: 340px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 1.5rem 1.2rem 1.2rem 1.2rem;
+            text-align: center;
+        }
+        .friend-card:hover {
+            transform: translateY(-8px) scale(1.01);
+            box-shadow: 0 16px 48px rgba(88, 58, 40, 0.28);
+            border-color: var(--accent2);
+        }
+        .friend-profile-pic {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--accent2);
+            margin-bottom: 1rem;
+            background: #fff;
+        }
+        .friend-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent2);
+            margin-bottom: 0.5rem;
+        }
+        .friend-actions {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .btn-accent {
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            font-size: 1.02rem;
+            border-radius: 10px;
+            padding: 0.6rem 1.5rem;
+            box-shadow: 0 2px 8px #583a2822;
+            transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        }
+        .btn-accent:hover {
+            background: linear-gradient(135deg, var(--accent), var(--main-dark));
+            color: #fff;
+            box-shadow: 0 4px 16px #583a2822;
+            transform: translateY(-2px) scale(1.03);
+        }
+        .footer {
+            background: var(--input-bg);
+            border-top: 1px solid var(--input-border);
+            padding: 12px 0 8px 0;
+            margin-top: 28px;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .main-container { padding: 0 0.2rem; }
+            .friends-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+            .friend-card { max-width: 98vw; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">StayMates</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <form action="/explore" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Explore</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/host_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Host Property</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/view_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">View Property</button>
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                            <% if (my_profile && my_profile.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= my_profile.profile_picture %>" alt="Profile Picture" class="navbar-profile-pic">
+                            <% } else { %>
+                                <img src="/default-profile.jpg" alt="Default Profile Picture" class="navbar-profile-pic">
+                            <% } %>
+                            <strong><%= my_profile && my_profile.full_name ? my_profile.full_name : 'Me' %></strong>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="./inbox.html">Inbox</a></li>
+                            <li>
+                                <form action="/friendlist" method="GET" class="d-inline">
+                                    <button class="dropdown-item" type="submit">Friend List</button>
+                                </form>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/logout" method="POST" style="display: inline;">
+                                    <button type="submit" class="dropdown-item">Sign out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="main-container">
+        <div class="page-header">
+            <h1 class="page-title">My Friends</h1>
+        </div>
+        <% if (acceptedFriends && acceptedFriends.length > 0) { %>
+            <div class="friends-grid">
+                <% acceptedFriends.forEach(friend => { %>
+                    <div class="friend-card">
+                        <% if (friend.profile_picture) { %>
+                            <img src="data:image/jpeg;base64,<%= friend.profile_picture %>" alt="<%= friend.full_name %>" class="friend-profile-pic">
+                        <% } else { %>
+                            <img src="/default-profile.jpg" alt="<%= friend.full_name %>" class="friend-profile-pic">
+                        <% } %>
+                        <div class="friend-name"><%= friend.full_name %></div>
+                        <div class="friend-actions">
+                            <form action="/profile/<%= friend.user_id %>" method="GET" style="display:inline-block;">
+                                <button type="submit" class="btn btn-accent">View Profile</button>
+                            </form>
+                            <form action="/unfriend/<%= friend.user_id %>" method="POST" style="display:inline-block;">
+                                <button type="submit" class="btn btn-accent">Unfriend</button>
+                            </form>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        <% } else { %>
+            <div style="text-align:center; color:var(--muted); font-size:1.2rem; margin-top:2.5rem;">
+                <p>You have no friends yet. Start connecting with people on StayMates!</p>
+            </div>
+        <% } %>
+    </div>
+    <footer class="footer">
+        <img src="/images/LOGO.png" alt="Logo" style="width:28px; vertical-align:middle; border-radius:5px; margin-right:8px;">
+        <span style="color: var(--muted); font-size: 0.98em; vertical-align:middle;">©️2024 Stay-Mates, Inc</span>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

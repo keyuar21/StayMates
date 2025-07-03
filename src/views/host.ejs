@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Host a Property - StayMates</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --main-dark: #181512;
+            --main-bg: #2d2420;
+            --accent: #583a28;
+            --accent2: #a67c52;
+            --input-bg: #2a2320;
+            --input-border: #3a2c22;
+            --input-focus: #a67c52;
+            --text: #f8f6f2;
+            --muted: #d2c6b2;
+            --info-bg: #241c18;
+            --shadow: 0 4px 24px #583a2822;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--input-bg);
+            color: var(--text);
+            margin: 0;
+            padding-top: 70px;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(90deg, var(--main-dark) 0%, var(--accent) 100%);
+            padding: 1rem;
+            border-bottom: 2px solid var(--accent2);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 2px 12px #18151260;
+        }
+
+        .navbar-brand {
+            color: var(--accent2);
+            font-weight: bold;
+            font-size: 1.25rem;
+            letter-spacing: 1px;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--accent2);
+        }
+
+        .navbar-profile-pic {
+            border-radius: 50%;
+            object-fit: cover;
+            width: 40px;
+            height: 40px;
+        }
+
+
+
+        /* Main Content */
+        .main-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+
+        /* Form Styles */
+        .form-container {
+            background: var(--main-dark);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--input-border);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 3px rgba(166, 124, 82, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-control::placeholder {
+            color: var(--muted);
+        }
+
+        /* Image Upload Area */
+        .image-upload-area {
+            border: 2px dashed var(--input-border);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--info-bg);
+        }
+
+        .image-upload-area:hover {
+            border-color: var(--accent2);
+            background: var(--main-bg);
+        }
+
+        .image-upload-area.dragover {
+            border-color: var(--accent2);
+            background: rgba(166, 124, 82, 0.1);
+        }
+
+        .upload-message {
+            color: var(--muted);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .browse-button {
+            color: var(--accent2);
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--input-border);
+            transition: all 0.3s ease;
+        }
+
+        .image-preview img:hover {
+            transform: scale(1.05);
+            border-color: var(--accent2);
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: var(--main-dark);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent), var(--main-dark));
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-secondary {
+            background: var(--info-bg);
+            color: var(--text);
+            border: 2px solid var(--input-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--main-bg);
+            border-color: var(--accent2);
+        }
+
+        .my-properties-btn {
+            background: linear-gradient(135deg, var(--accent2), var(--accent));
+            color: var(--main-dark);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-block;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .my-properties-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            color: var(--main-dark);
+        }
+
+        /* Address Suggestions */
+        .suggestions {
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            position: absolute;
+            width: 100%;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--input-border);
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--main-bg);
+            color: var(--accent2);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+            }
+
+            .form-container {
+                padding: 1.5rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .navbar-nav .nav-link {
+                margin: 0.25rem 0;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-container {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--input-bg);
+            border-top: 1px solid var(--input-border);
+            padding: 12px 0 8px 0;
+            margin-top: 28px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="./index.html">StayMates</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <form action="/explore" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Explore</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/host_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">Host Property</button>
+                        </form>
+                    </li>
+                    <li class="nav-item">
+                        <form action="/view_property" method="GET" style="display: inline;">
+                            <button type="submit" class="nav-link btn btn-link">View Property </button>
+                        </form>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="User menu">
+                            <% if (profile && profile.profile_picture) { %>
+                                <img src="data:image/jpeg;base64,<%= profile.profile_picture.toString('base64') %>" alt="Profile Picture" class="navbar-profile-pic">
+                            <% } else { %>
+                                <img src="/default-profile.jpg" alt="Default Profile Picture" class="navbar-profile-pic">
+                            <% } %>
+                            <strong>Me</strong>
+                        </a>
+                        
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/new">My Profile</a></li>
+                            <li> 
+                            <form action="/friendlist" method="GET" class="d-inline">
+                               <button class="dropdown-item" type="submit">Friend List</button>
+                           </form>
+                           </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form action="/logout" method="POST" style="display: inline;">
+                                    <button type="submit" class="dropdown-item">Sign out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <!-- My Properties Button -->
+        <div class="text-center">
+            <form method="GET" action="/myhostedproperties" style="display: inline;">
+                <button type="submit" class="my-properties-btn">My Hosted Properties ↗️</button>
+            </form>
+        </div>
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">Host a Property</h1>
+            <p class="page-subtitle">Share your space and find the perfect roommates</p>
+        </div>
+
+        <!-- Property Form -->
+        <div class="form-container">
+            <form id="propertyForm" action="/host/property" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="requirement" class="form-label">Requirement:</label>
+                    <select name="requirement" id="requirement" class="form-select">
+                        <option value="roommate_rented">Already own a property, looking for roommates</option>
+                        <option value="owner_rented">Owner planning to rent their property</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="property_type" class="form-label">Property Type:</label>
+                    <select name="property_type" id="property_type" class="form-select">
+                        <option value="flat">Flat</option>
+                        <option value="villa">Villa</option>
+                        <option value="pg">PG</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="description" class="form-label">Property Details:</label>
+                    <textarea name="description" id="description" class="form-control" placeholder="Describe your property, amenities, and what you're looking for in roommates..." rows="4"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="occupancy" class="form-label">Occupancy (Number of People):</label>
+                    <input type="number" name="occupancy" id="occupancy" class="form-control" placeholder="Number of people" min="1" required>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="pets_allowed" class="form-label">Pets Allowed:</label>
+                            <select name="pets_allowed" id="pets_allowed" class="form-select">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="smoking_allowed" class="form-label">Smoking Allowed:</label>
+                            <select name="smoking_allowed" id="smoking_allowed" class="form-select">
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Property Images:</label>
+                    <div id="imageUploadArea" class="image-upload-area">
+                        <input type="file" name="images" id="images" multiple accept="image/*" style="display: none;">
+                        <div id="uploadMessage" class="upload-message">
+                            <span id="instructionText">Drag & drop multiple images of your property here or </span>
+                            <label for="images" class="browse-button" style="cursor:pointer;">browse files</label>
+                        </div>
+                        <div id="imagePreview" class="image-preview"></div>
+                        <button type="button" id="clearButton" class="btn btn-secondary mt-3" style="display: none;">Clear Selection</button>
+                    </div>
+                </div>
+
+                <!-- Hidden fields for coordinates -->
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+
+                <div class="form-group">
+                    <label for="address" class="form-label">Address:</label>
+                    <input type="text" id="address" name="address" class="form-control" placeholder="Start typing your address" autocomplete="off">
+                    <div id="addressSuggestions" class="suggestions" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="availability_date" class="form-label">Available Until:</label>
+                    <input type="text" name="availability_date" id="availability_date" class="form-control" placeholder="Select a date">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="rent_per_day" class="form-label">Rent (Per Day):</label>
+                            <input type="number" name="rent_per_day" id="rent_per_day" class="form-control" placeholder="₹ per day">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="rent_per_week" class="form-label">Rent (Per Week):</label>
+                            <input type="number" name="rent_per_week" id="rent_per_week" class="form-control" placeholder="₹ per week">
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="rent_per_month" class="form-label">Rent (Per Month):</label>
+                            <input type="number" name="rent_per_month" id="rent_per_month" class="form-control" placeholder="₹ per month">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Post Property</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: var(--input-bg); border-top: 1px solid var(--input-border); padding: 12px 0 8px 0; margin-top: 28px; text-align: center;">
+        <img src="/images/LOGO.png" alt="Logo" style="width:28px; vertical-align:middle; border-radius:5px; margin-right:8px;">
+        <span style="color: var(--muted); font-size: 0.98em; vertical-align:middle;">©️2024 Stay-Mates, Inc</span>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        // Image upload functionality
+        const imageUploadArea = document.getElementById('imageUploadArea');
+        const imageInput = document.getElementById('images');
+        const imagePreview = document.getElementById('imagePreview');
+        const clearButton = document.getElementById('clearButton');
+        const uploadMessage = document.getElementById('uploadMessage');
+        // Store all selected files
+        let selectedFiles = [];
+
+        function updatePreview() {
+            imagePreview.innerHTML = '';
+            selectedFiles.forEach((file, idx) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgWrapper = document.createElement('div');
+                    imgWrapper.style.position = 'relative';
+                    imgWrapper.style.display = 'inline-block';
+                    imgWrapper.style.marginRight = '8px';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    imgWrapper.appendChild(img);
+                    // Remove button
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '×';
+                    removeBtn.title = 'Remove';
+                    removeBtn.style.position = 'absolute';
+                    removeBtn.style.top = '2px';
+                    removeBtn.style.right = '2px';
+                    removeBtn.style.background = '#a67c52';
+                    removeBtn.style.color = '#fff';
+                    removeBtn.style.border = 'none';
+                    removeBtn.style.borderRadius = '50%';
+                    removeBtn.style.width = '22px';
+                    removeBtn.style.height = '22px';
+                    removeBtn.style.cursor = 'pointer';
+                    removeBtn.onclick = function() {
+                        selectedFiles.splice(idx, 1);
+                        updatePreview();
+                    };
+                    imgWrapper.appendChild(removeBtn);
+                    imagePreview.appendChild(imgWrapper);
+                };
+                reader.readAsDataURL(file);
+            });
+            clearButton.style.display = selectedFiles.length > 0 ? 'block' : 'none';
+            // Only hide the instruction text, not the browse label
+            const instructionText = document.getElementById('instructionText');
+            if (instructionText) {
+                instructionText.style.display = selectedFiles.length > 0 ? 'none' : 'inline';
+            }
+        }
+
+        function handleFiles(files) {
+            // Append new files, avoiding duplicates by name+size
+            Array.from(files).forEach(file => {
+                if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    selectedFiles.push(file);
+                }
+            });
+            updatePreview();
+        }
+
+        imageUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.add('dragover');
+        });
+
+        imageUploadArea.addEventListener('dragleave', () => {
+            imageUploadArea.classList.remove('dragover');
+        });
+
+        imageUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            imageUploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            // Reset input so you can select the same file again if needed
+            imageInput.value = '';
+        });
+
+        clearButton.addEventListener('click', () => {
+            imageInput.value = '';
+            selectedFiles = [];
+            updatePreview();
+        });
+
+        // On form submit, append all files to FormData
+        document.getElementById('propertyForm').addEventListener('submit', function(e) {
+            // Replace the input's files with our selectedFiles
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            imageInput.files = dataTransfer.files;
+        });
+
+        // Address autocomplete
+        document.getElementById("address").addEventListener("input", function() {
+            const query = this.value;
+            const suggestionsDiv = document.getElementById("addressSuggestions");
+            
+            if (query.length < 3) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            fetch(`https://api.locationiq.com/v1/autocomplete.php?key=pk.9628833fdba99c5c0cc1435b667df80a&q=${encodeURIComponent(query)}&limit=5&format=json`)
+                .then(response => response.json())
+                .then(data => {
+                    const suggestions = data.map(place => 
+                        `<div class="suggestion-item" data-lat="${place.lat}" data-lon="${place.lon}">${place.display_name}</div>`
+                    );
+                    suggestionsDiv.innerHTML = suggestions.join("");
+                    suggestionsDiv.style.display = 'block';
+
+                    document.querySelectorAll(".suggestion-item").forEach(item => {
+                        item.addEventListener("click", function() {
+                            document.getElementById("address").value = this.textContent;
+                            document.getElementById("latitude").value = this.getAttribute("data-lat");
+                            document.getElementById("longitude").value = this.getAttribute("data-lon");
+                            suggestionsDiv.style.display = 'none';
+                        });
+                    });
+                })
+                .catch(error => console.error("Error fetching address suggestions:", error));
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#address') && !e.target.closest('#addressSuggestions')) {
+                document.getElementById("addressSuggestions").style.display = 'none';
+            }
+        });
+
+        // Initialize Flatpickr
+        flatpickr("#availability_date", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+        });
+    </script>
+</body>
+</html>

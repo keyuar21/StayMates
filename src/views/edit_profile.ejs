@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-bg: #faf9f7;
+            --container-bg: #fff;
+            --accent: #6b3f1d;
+            --accent2: #a67c52;
+            --input-bg: #f7f4f1;
+            --input-border: #cbb89d;
+            --input-focus: #a67c52;
+            --text: #2d1a0b;
+            --muted: #7c5a3a;
+            --shadow: 0 8px 32px #6b3f1d22;
+        }
+        body {
+            font-family: 'Montserrat', Arial, sans-serif;
+            background: var(--main-bg);
+            color: var(--text);
+            margin: 0;
+            padding-top: 70px;
+            min-height: 100vh;
+        }
+        .edit-profile-container {
+            background: var(--container-bg);
+            width: 98%;
+            max-width: 600px;
+            margin: 36px auto;
+            padding: 36px 32px 32px 32px;
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            animation: fadeIn 1s cubic-bezier(.77,0,.18,1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.97) translateY(40px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 28px;
+            color: var(--accent);
+            font-size: 2.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        label {
+            color: var(--muted);
+            font-size: 1.08em;
+            font-weight: 500;
+            margin-bottom: 2px;
+        }
+        .profile-picture {
+            margin: 0 auto 10px auto;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 4px 16px #a67c5233;
+            width: 100px;
+            height: 100px;
+            background: var(--input-bg);
+            border: 3px solid var(--accent2);
+            display: block;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--input-border);
+            border-radius: 13px;
+            background: var(--input-bg);
+            color: var(--text);
+            font-size: 1.05em;
+            transition: border 0.3s, box-shadow 0.3s;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        select:focus {
+            border: 2px solid var(--input-focus);
+            outline: none;
+            box-shadow: 0 0 0 2px #a67c5233;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            color: #fff;
+            border: none;
+            border-radius: 13px;
+            font-size: 1.13em;
+            font-weight: 700;
+            margin-top: 10px;
+            cursor: pointer;
+            box-shadow: 0 2px 12px #6b3f1d22;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+        }
+        button:hover {
+            background: linear-gradient(90deg, var(--accent2), var(--accent));
+            color: #fff;
+            transform: scale(1.03);
+        }
+        @media (max-width: 700px) {
+            .edit-profile-container {
+                padding: 18px 2vw 18px 2vw;
+                max-width: 99vw;
+            }
+            .profile-picture {
+                width: 70px;
+                height: 70px;
+            }
+            h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-profile-container">
+        <h1>Edit Your Profile</h1>
+        <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="profile_picture">Profile Picture:</label>
+                <% if (profile.profile_picture) { %>
+                    <img src="data:image/jpeg;base64,<%= profile.profile_picture.toString('base64') %>" alt="Profile Picture" class="profile-picture" id="avatarImg">
+                <% } else { %>
+                    <img src="/default-profile.jpg" alt="Profile Picture" class="profile-picture" id="avatarImg">
+                <% } %>
+                <input type="file" id="profile_picture" name="profile_picture" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="full_name">Full Name:</label>
+                <input type="text" id="full_name" name="full_name" value="<%= profile.full_name %>">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" name="phone" value="<%= profile.phone %>">
+            </div>
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" value="<%= profile.age %>">
+            </div>
+            <div class="form-group">
+                <label for="university">University:</label>
+                <input type="text" id="university" name="university" value="<%= profile.university %>">
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" value="<%= profile.address %>">
+            </div>
+            <div class="form-group">
+                <label for="smoker">Smoker:</label>
+                <select id="smoker" name="smoker" required>
+                    <option value="">Smoker?</option>
+                    <option value="Rarely" <%= profile.smoker === 'Rarely' ? 'selected' : '' %>>Rarely</option>
+                    <option value="Yes" <%= profile.smoker === 'Yes' ? 'selected' : '' %>>Yes</option>
+                    <option value="Non-Smoker" <%= profile.smoker === 'Non-Smoker' ? 'selected' : '' %>>Non-Smoker</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="food">Food Preference:</label>
+                <select id="food" name="food">
+                    <option value="Veg" <%= profile.food === 'Veg' ? 'selected' : '' %>>Veg</option>
+                    <option value="Non-Veg" <%= profile.food === 'Non-Veg' ? 'selected' : '' %>>Non-Veg</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="adhar_number">Aadhar Number:</label>
+                <input type="text" id="adhar_number" name="adhar_number" value="<%= profile.adhar_number %>">
+            </div>
+            <div class="form-group">
+                <label for="twitter">Twitter:</label>
+                <input type="url" id="twitter" name="twitter" value="<%= profile.twitter %>">
+            </div>
+            <div class="form-group">
+                <label for="instagram">Instagram:</label>
+                <input type="url" id="instagram" name="instagram" value="<%= profile.instagram %>">
+            </div>
+            <div class="form-group">
+                <label for="facebook">Facebook:</label>
+                <input type="url" id="facebook" name="facebook" value="<%= profile.facebook %>">
+            </div>
+            <button type="submit">Update Profile</button>
+        </form>
+    </div>
+    <script>
+        // Live avatar preview
+        const profilePictureInput = document.getElementById('profile_picture');
+        const avatarImg = document.getElementById('avatarImg');
+        if(profilePictureInput && avatarImg) {
+            profilePictureInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        avatarImg.src = evt.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

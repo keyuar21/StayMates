@@ -1,0 +1,55 @@
+# Database Configuration
+DB_HOST=ep-flat-fire-a1i03ydq-pooler.ap-southeast-1.aws.neon.tech
+DB_PORT=5432
+DB_NAME=neondb
+DB_USER=neondb_owner
+DB_PASSWORD=npg_zFIdB8CYvq9s
+DB_SSL=true
+DB_CHANNEL_BINDING=require
+
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Session Configuration
+SESSION_SECRET=your-super-secure-session-secret-change-this-in-production
+
+# JWT Configuration
+JWT_SECRET=your-super-secure-jwt-secret-change-this-in-production
+JWT_EXPIRES_IN=7d
+
+# Email Configuration (Nodemailer)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=staymates123@gmail.com
+EMAIL_PASS=evnt aepa yubz zuqc
+
+# File Upload Configuration
+MAX_FILE_SIZE=10485760
+UPLOAD_PATH=./uploads
+
+# External APIs
+LOCATIONIQ_API_KEY=pk.9628833fdba99c5c0cc1435b667df80a
+
+# Security Configuration
+BCRYPT_ROUNDS=12
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+
+# Frontend Configuration
+CLIENT_URL=http://localhost:3000
+
+# Logging
+LOG_LEVEL=info
+LOG_FILE=./logs/app.log
+
+# Redis Configuration (if using Redis for sessions)
+REDIS_URL=redis://localhost:6379
+
+# Production Database URL (for deployment)
+DATABASE_URL=
+
+# Cloud Storage (if using)
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
