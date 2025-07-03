@@ -79,7 +79,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+
 
 # Storybook build outputs
 .out
@@ -105,7 +105,7 @@ pids
 
 # Uploaded files
 uploads/
-public/uploads/
+
 
 # Database files
 *.sqlite
