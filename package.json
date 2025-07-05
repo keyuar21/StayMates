@@ -17,7 +17,10 @@
     "db:init": "node database/init.js",
     "db:seed": "node database/seed.js",
     "docker:dev": "docker-compose -f docker-compose.dev.yml up",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up"
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up",
+    "monitoring:up": "docker-compose -f docker-compose.monitoring.yml up -d",
+    "monitoring:down": "docker-compose -f docker-compose.monitoring.yml down",
+    "monitoring:logs": "docker-compose -f docker-compose.monitoring.yml logs -f"
   },
   "keywords": [
     "roommate",
@@ -49,6 +52,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.15",
     "pg": "^8.13.1",
+    "prom-client": "^15.1.0",
     "socket.io": "^4.7.4",
     "uuid": "^9.0.1",
     "winston": "^3.11.0",

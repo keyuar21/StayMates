@@ -8,6 +8,7 @@ import pkg from "pg";
 import multer from 'multer';
 import path from 'path';
 import dotenv from "dotenv";
+import { prometheusMiddleware, trackDbQuery, updateBusinessMetrics, metricsEndpoint } from './config/prometheus.js';
 
 dotenv.config({ path: process.cwd() + "/.env" });
 
@@ -15,9 +16,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const { Client } = pkg;
+const { Pool } = pkg;
 
-const db = new Client({
+const db = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
     database: process.env.DB_NAME,
@@ -26,7 +27,12 @@ const db = new Client({
     ssl: process.env.DB_SSL === "true" ? {
         rejectUnauthorized: false,
         channelBinding: process.env.DB_CHANNEL_BINDING || undefined
-    } : false
+    } : false,
+    // Connection pool settings for better reliability
+    max: 20, // Maximum number of clients in the pool
+    idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+    connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+    maxUses: 7500, // Close (and replace) a connection after it has been used 7500 times
 });
 
 console.log('Connecting to database:', process.env.DB_NAME);
@@ -950,13 +956,43 @@ app.get('/new', async (req, res) => {
     }
 });
 
+// Add Prometheus middleware
+app.use(prometheusMiddleware);
+
+// Add metrics endpoint
+app.get('/metrics', metricsEndpoint);
+
+// Update business metrics every 5 minutes
+setInterval(() => {
+    updateBusinessMetrics(db);
+}, 5 * 60 * 1000);
+
 db.connect()
   .then(() => {
+    console.log('Database connected successfully');
+    
+    // Add connection error handling
+    db.on('error', (err) => {
+      console.error('Database connection error:', err);
+      // Don't exit the process, just log the error
+    });
+    
+    // Add connection end handling
+    db.on('end', () => {
+      console.log('Database connection ended');
+      // Don't exit the process, just log the event
+    });
+    
     app.listen(port, () => {
       console.log(`Server running on port ${port}`);
     });
   })
   .catch((err) => {
     console.error('Failed to connect to database:', err);
-    process.exit(1);
+    // Don't exit immediately, try to start server anyway
+    console.log('Starting server without database connection...');
+    
+    app.listen(port, () => {
+      console.log(`Server running on port ${port} (database connection failed)`);
+    });
   });
