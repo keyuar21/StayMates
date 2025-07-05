@@ -1,5 +1,5 @@
 # Use the official Node.js runtime as the base image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -13,11 +13,8 @@ RUN npm ci --only=production
 # Copy the rest of the application code
 COPY . .
 
-# Create uploads directory
-RUN mkdir -p uploads
-
-# Create logs directory
-RUN mkdir -p logs
+# Create necessary directories
+RUN mkdir -p uploads logs
 
 # Create a non-root user to run the application
 RUN addgroup -g 1001 -S nodejs
@@ -30,9 +27,9 @@ USER staymates
 # Expose the port the app runs on
 EXPOSE 3000
 
-# Health check
+# Health check (simple HTTP check)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node healthcheck.js
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 # Define the command to run the application
 CMD ["npm", "start"]
