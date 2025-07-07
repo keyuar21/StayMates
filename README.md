@@ -6,7 +6,7 @@
 
 A modern, full-featured roommate and accommodation finding platform built with Node.js, Express, PostgreSQL, and modern web technologies.
 
-![StayMates Screenshot](./public/images/LOGO.png)
+![Visit the webiste ](.https://staymates-3.onrender.com/)
 
 ## 🌟 Features
 
