@@ -60,11 +60,11 @@ A modern, full-featured roommate and accommodation finding platform built with N
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **PostgreSQL** - Primary database
-- **Redis** - Caching and session storage
 - **JWT** - Authentication tokens
 - **Bcrypt** - Password hashing
 - **Multer** - File upload handling
 - **Nodemailer** - Email service
+
 
 ### Frontend
 - **EJS** - Template engine
@@ -79,6 +79,7 @@ A modern, full-featured roommate and accommodation finding platform built with N
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
 - **Nodemon** - Development server
+- **Prometheus & Grafana** – Monitoring and metrics
 
 ## 📋 Prerequisites
 
@@ -232,4 +233,4 @@ For support, email support@staymates.com or create an issue in this repository.
 
 ---
 
-**Made with ❤️ by the StayMates Team**
+**Made with ❤️ by the Keyur Bhelonde **
