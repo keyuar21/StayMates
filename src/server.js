@@ -4,7 +4,9 @@ import { fileURLToPath } from "url";
 import nodemailer from "nodemailer";
 import crypto from "crypto";
 import session from "express-session";
-import pkg from "pg";
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { Pool } = require('pg');
 import multer from 'multer';
 import path from 'path';
 import dotenv from "dotenv";
@@ -16,7 +18,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const { Pool } = pkg;
 
 const db = new Pool({
     user: process.env.DB_USER,
