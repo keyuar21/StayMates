@@ -67,14 +67,23 @@ jobs:
       - name: 🔀 Merge `min` into `main`
         if: steps.check_server.outcome == 'success'
         run: |
-
+          # Clean up any local changes that might interfere with checkout
+          git reset --hard HEAD
+          git clean -fd
           
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
           git fetch origin main
           git checkout main
-          git merge origin/min  -m "✅ Auto-merged min into main"
+          
+          # Use merge strategy to prefer min branch changes
+          git merge origin/min --allow-unrelated-histories -X theirs -m "✅ Auto-merged min into main"
+          
+          # If there are still conflicts, resolve them by taking min branch content
+          git checkout --theirs package-lock.json package.json src/server.js tailwind.config.js 2>/dev/null || true
+          git add .
+          git commit -m "Resolve merge conflicts by taking min branch changes" || true
 
           git push origin main
 
