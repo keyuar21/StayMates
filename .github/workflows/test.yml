@@ -76,17 +76,9 @@ jobs:
 
           git fetch origin main
           git checkout main
-          
-          # Instead of merging, reset main to min branch content
-          git reset --hard origin/min
-          
-          # Remove node_modules from tracking
-          git rm -r --cached node_modules 2>/dev/null || true
-          git add .gitignore
-          git commit -m "Remove node_modules from tracking" || true
-          
-          # Force push to main (since we're resetting history)
-          git push origin main --force
+          git merge origin/min --allow-unrelated-histories -m "✅ Auto-merged min into main"
+
+          git push origin main
 
       - name: 🧹 Delete `min` branch
         if: steps.check_server.outcome == 'success'
