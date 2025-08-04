@@ -87,7 +87,4 @@ jobs:
 
           git push origin main
 
-      - name: 🧹 Delete `min` branch
-        if: steps.check_server.outcome == 'success'
-        run: |
-          git push origin --delete min
+
