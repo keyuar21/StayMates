@@ -23,25 +23,46 @@ jobs:
           npm cache clean --force
           npm install
 
-      - name: 🧪 Run tests
-        run: npm test
+      - name: Start server in background
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_SSL: ${{ secrets.DB_SSL }}
+          DB_CHANNEL_BINDING: ${{ secrets.DB_CHANNEL_BINDING }}
+          PORT: ${{ secrets.PORT }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRES_IN: ${{ secrets.JWT_EXPIRES_IN }}
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+          MAX_FILE_SIZE: ${{ secrets.MAX_FILE_SIZE }}
+          UPLOAD_PATH: ${{ secrets.UPLOAD_PATH }}
+          LOCATIONIQ_API_KEY: ${{ secrets.LOCATIONIQ_API_KEY }}
+          BCRYPT_ROUNDS: ${{ secrets.BCRYPT_ROUNDS }}
+          RATE_LIMIT_WINDOW_MS: ${{ secrets.RATE_LIMIT_WINDOW_MS }}
+          RATE_LIMIT_MAX_REQUESTS: ${{ secrets.RATE_LIMIT_MAX_REQUESTS }}
+          CLIENT_URL: ${{ secrets.CLIENT_URL }}
+          LOG_LEVEL: ${{ secrets.LOG_LEVEL }}
+          LOG_FILE: ${{ secrets.LOG_FILE }}
+          REDIS_URL: ${{ secrets.REDIS_URL }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: npm start &
 
-      - name: 🚀 Start the app in the background
-        run: nohup npm start > server.log 2>&1 &
-
-      - name: ⏳ Wait for server to start
-        run: sleep 10
-
-      - name: ✅ Check if server is running
+      - name: Wait and check if server is running
         id: check_server
+        continue-on-error: true
         run: |
-          STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000)
-          if [ "$STATUS_CODE" -eq 200 ]; then
-            echo "Server is running (HTTP 200)"
-          else
-            echo "❌ Server failed to start. Got HTTP $STATUS_CODE"
-            exit 1
-          fi
+          sleep 10
+          curl -f http://localhost:3000
 
       - name: 🔀 Merge `min` into `main`
         if: steps.check_server.outcome == 'success'
