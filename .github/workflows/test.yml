@@ -67,6 +67,8 @@ jobs:
       - name: 🔀 Merge `min` into `main`
         if: steps.check_server.outcome == 'success'
         run: |
+          git reset --hard HEAD
+          git clean -fd
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
