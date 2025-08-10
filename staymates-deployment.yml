@@ -1,0 +1,36 @@
+# staymates-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: staymates
+  name: staymates
+  namespace: rolling-ns
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: staymates
+  template:
+    metadata:
+      labels:
+        app: staymates
+    spec:
+      # This tells the Pod how to log into your private ECR registry
+      imagePullSecrets:
+      - name: ecr-registry-secret
+      containers:
+      - name: staymates
+        image: 563765641164.dkr.ecr.ap-south-1.amazonaws.com/staymates-app:latest
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
