@@ -1,10 +1,38 @@
-# StayMates - Where Every Stay Feels Like Home
+StayMates - Where Every Stay Feels Like Home
+A modern, full-featured roommate and accommodation finding platform built with Node.js, Express, and PostgreSQL, now featuring a complete DevOps pipeline for continuous integration and deployment.**
 
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)]()
+# 🚀 DevOps & CI/CD Pipeline
 
-A modern, full-featured roommate and accommodation finding platform built with Node.js, Express, PostgreSQL, and modern web technologies.
+This project implements a robust CI/CD pipeline to automate testing and deployment, ensuring code quality and rapid delivery of new features.
+
+### DevOps Flow Diagram
+![DevOps Flow Diagram](path/to/your/diagram.png) <!-- Replace with the actual path to your diagram -->
+
+### CI/CD Workflow Explained
+The pipeline follows these stages:
+
+1. **Development & Code Commit** 👨‍💻
+   - Developers work on new features in a dedicated `min` branch.
+   - Once development is complete, the code is pushed to the `min` branch in the GitHub repository.
+
+2. **Automated Testing (GitHub Actions)** ✅
+   - A push to the `min` branch automatically triggers a GitHub Actions workflow.
+   - This workflow runs a series of automated tests to validate code quality and functionality.
+   - If tests pass, the code is automatically merged into the `main` branch.
+   - If tests fail, the pipeline stops, and the developer is notified to fix the issues.
+
+3. **Build & Deployment (Jenkins)** 🏗️
+   - A webhook triggers a Jenkins pipeline as soon as a commit is pushed to the `main` branch.
+   - The Jenkins server, running on an AWS EC2 instance, pulls the latest code from the `main` branch.
+   - Jenkins then builds a new Docker image of the application.
+
+4. **Container Registry (AWS ECR)** 📦
+   - The newly built Docker image is tagged and pushed to AWS Elastic Container Registry (ECR) for storage and versioning.
+
+5. **Production Deployment (Kubernetes)** 🚢
+   - Jenkins updates the Kubernetes deployment configuration (`k8deployment.yml`) with the new image tag.
+   - The Kubernetes (Kind) cluster, also running on EC2, pulls the latest image from AWS ECR.
+   - A rolling update strategy is used to deploy the new version with zero downtime, ensuring the application remains available to users.
 
 ![Visit the webiste  https://staymates-3.onrender.com/ ]
 
