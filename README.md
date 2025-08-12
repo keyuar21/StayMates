@@ -1,4 +1,4 @@
-#StayMates - Where Every Stay Feels Like Home
+## StayMates - Where Every Stay Feels Like Home
 A modern, full-featured roommate and accommodation finding platform built with Node.js, Express, and PostgreSQL, now featuring a complete DevOps pipeline for continuous integration and deployment.**
 
 ## 🚀 DevOps & CI/CD Pipeline
