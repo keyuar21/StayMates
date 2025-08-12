@@ -6,7 +6,8 @@ A modern, full-featured roommate and accommodation finding platform built with N
 This project implements a robust CI/CD pipeline to automate testing and deployment, ensuring code quality and rapid delivery of new features.
 
 ### DevOps Flow Diagram
-![DevOps Flow Diagram](path/to/your/diagram.png) <!-- Replace with the actual path to your diagram -->
+<img width="1888" height="984" alt="Screenshot 2025-08-12 at 5 38 51 PM" src="https://github.com/user-attachments/assets/a55f607b-1522-435a-bd46-704cde8ec8cf" />
+<!-- Replace with the actual path to your diagram -->
 
 ### CI/CD Workflow Explained
 The pipeline follows these stages:
