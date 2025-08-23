@@ -148,3 +148,5 @@ coverage/
 # Lock files (uncomment if you want to ignore them)
 # package-lock.json
 # yarn.lock
+node_modules/
+.vercel
