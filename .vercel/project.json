@@ -1,12 +1,1 @@
-{
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "framework": "node",
-  "build": {
-    "env": {
-      "NODE_VERSION": "20"
-    }
-  }
-
-}
+{"projectId":"prj_0oxsQuEXWXqPRgg9P9ax0m8ERh5I","orgId":"team_Aepkf0DuAd7ljItcxfIXw8PQ","projectName":"stay-mates"}
